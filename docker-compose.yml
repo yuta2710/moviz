@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  mongo_db:
+    container_name: sepm_mongo_container
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/b
+    ports:
+      - '27017:27017'
+
+  api:
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      PORT: "8080"
+      MONGO_URI: "mongodb://sepm_mongo_container:27017/sepm_db"
+      NAME: "YUTA"
+    depends_on:
+      - mongo_db
+    volumes:
+      - .:/usr/src/app
+volumes:
+  mongo_db: {}
