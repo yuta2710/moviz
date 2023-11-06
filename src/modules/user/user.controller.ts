@@ -22,8 +22,7 @@ export default class UserController implements BaseController {
       .put(this.updateUser)
       .delete(this.deleteUser);
 
-    this.router.route(`${this.path}/:id/photo`).patch(this.uploadPhotoToS3);
-    this.router.route(`${this.path}/:id/photo/:key`).get(this.getPhotoFromS3);
+    this.router.route(`${this.path}/:id/photo`).patch(this.setAvatar);
   };
 
   private createUser = async (
@@ -81,19 +80,11 @@ export default class UserController implements BaseController {
     await this.service.deleteUser(req, res, next);
   };
 
-  private uploadPhotoToS3 = async (
+  private setAvatar = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
     return this.service.setAvatar(req, res, next);
-  };
-
-  private getPhotoFromS3 = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    return this.service.getAvatar(req, res, next);
   };
 }

@@ -10,7 +10,7 @@ const Bucket = process.env.S3_BUCKET;
 const s3 = new S3({ region, accessKeyId, secretAccessKey });
 const client = new S3Client({ region });
 
-export const uploadFile = async (file: UploadedFile) => {
+export const uploadFileToS3 = async (file: UploadedFile) => {
   const data = await s3
     .putObject({
       Bucket,

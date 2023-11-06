@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUrlFromS3 = exports.uploadFile = void 0;
+exports.getUrlFromS3 = exports.uploadFileToS3 = void 0;
 const s3_1 = __importDefault(require("aws-sdk/clients/s3"));
 const client_s3_1 = require("@aws-sdk/client-s3");
 const s3_request_presigner_1 = require("@aws-sdk/s3-request-presigner");
@@ -13,7 +13,7 @@ const region = process.env.S3_REGION;
 const Bucket = process.env.S3_BUCKET;
 const s3 = new s3_1.default({ region, accessKeyId, secretAccessKey });
 const client = new client_s3_1.S3Client({ region });
-const uploadFile = async (file) => {
+const uploadFileToS3 = async (file) => {
     const data = await s3
         .putObject({
         Bucket,
@@ -25,7 +25,7 @@ const uploadFile = async (file) => {
         .promise();
     return data;
 };
-exports.uploadFile = uploadFile;
+exports.uploadFileToS3 = uploadFileToS3;
 const getUrlFromS3 = async (key) => {
     const command = new client_s3_1.GetObjectCommand({
         Bucket,

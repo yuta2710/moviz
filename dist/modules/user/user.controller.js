@@ -21,8 +21,7 @@ class UserController {
             .get(this.getUserById)
             .put(this.updateUser)
             .delete(this.deleteUser);
-        this.router.route(`${this.path}/:id/photo`).patch(this.uploadPhotoToS3);
-        this.router.route(`${this.path}/:id/photo/:key`).get(this.getPhotoFromS3);
+        this.router.route(`${this.path}/:id/photo`).patch(this.setAvatar);
     };
     createUser = async (req, res, next) => {
         try {
@@ -48,11 +47,8 @@ class UserController {
     deleteUser = async (req, res, next) => {
         await this.service.deleteUser(req, res, next);
     };
-    uploadPhotoToS3 = async (req, res, next) => {
+    setAvatar = async (req, res, next) => {
         return this.service.setAvatar(req, res, next);
-    };
-    getPhotoFromS3 = async (req, res, next) => {
-        return this.service.getAvatar(req, res, next);
     };
 }
 exports.default = UserController;

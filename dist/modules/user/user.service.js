@@ -8,7 +8,7 @@ const user_model_1 = __importDefault(require("./user.model"));
 const error_response_util_1 = __importDefault(require("../../utils/error-response.util"));
 const error_types_setting_util_1 = require("../../utils/error-types-setting.util");
 const s3_service_1 = require("../../core/aws/s3.service");
-// import { uploadFile } from "@/utils/file.util";
+const photo_type_setting_util_1 = require("../../utils/photo-type-setting.util");
 class UserService {
     model = user_model_1.default;
     createUser = async (req, res, next) => {
@@ -108,7 +108,16 @@ class UserService {
             return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], "Please upload a file"));
         }
         const file = req.files.file;
-        await (0, s3_service_1.uploadFile)(file);
+        if (file.mimetype !== photo_type_setting_util_1.PhotoType["PNG"] &&
+            file.mimetype !== photo_type_setting_util_1.PhotoType["JPEG"] &&
+            file.mimetype !== photo_type_setting_util_1.PhotoType["JPG"] &&
+            file.mimetype !== photo_type_setting_util_1.PhotoType["WEBP"]) {
+            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], "Please upload an image"));
+        }
+        if (Number(file.size) > Number(process.env.MAX_FILE_UPLOAD)) {
+            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], `Please upload an image's size less than ${process.env.MAX_FILE_UPLOAD}`));
+        }
+        await (0, s3_service_1.uploadFileToS3)(file);
         const url = await (0, s3_service_1.getUrlFromS3)(file.name);
         const result = await user.updateOne({ photo: url }, { new: true });
         return res.status(200).json({
@@ -116,23 +125,6 @@ class UserService {
             message: `Successfully uploaded the photo to S3 bucket and update the avatar of user ${req.params.id}`,
             data: result,
         });
-    };
-    getAvatar = async (req, res, next) => {
-        const user = await this.model.findById(req.params.id);
-        if (!user) {
-            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "User not found"));
-        }
-        const key = req.params.key;
-        const s3Url = await (0, s3_service_1.getUrlFromS3)(key);
-        if (s3Url) {
-            res.status(200).json({
-                success: true,
-                data: s3Url,
-            });
-        }
-        else {
-            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "URL does not exist on S3 bucket"));
-        }
     };
 }
 exports.default = UserService;
