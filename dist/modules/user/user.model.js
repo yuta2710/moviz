@@ -64,6 +64,10 @@ const UserSchema = new mongoose_1.default.Schema({
         enum: ["user", "admin", "manager"],
         default: "user",
     },
+    photo: {
+        type: String,
+        default: "https://sepm-bucket.s3.eu-west-1.amazonaws.com/default_avatar.jpeg",
+    },
     resetPasswordToken: String,
     resetPasswordExpired: String,
     refreshTokens: [String],

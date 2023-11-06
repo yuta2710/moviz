@@ -21,6 +21,9 @@ export default class UserController implements BaseController {
       .get(this.getUserById)
       .put(this.updateUser)
       .delete(this.deleteUser);
+
+    this.router.route(`${this.path}/:id/photo`).patch(this.uploadPhotoToS3);
+    this.router.route(`${this.path}/:id/photo/:key`).get(this.getPhotoFromS3);
   };
 
   private createUser = async (
@@ -29,8 +32,6 @@ export default class UserController implements BaseController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { firstName, lastName, email, password, role, gender } = req.body;
-
       const duoTokens = await this.service.createUser(req, res, next);
 
       res.status(200).json({
@@ -78,5 +79,21 @@ export default class UserController implements BaseController {
     next: NextFunction
   ): Promise<Response | void> => {
     await this.service.deleteUser(req, res, next);
+  };
+
+  private uploadPhotoToS3 = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.setAvatar(req, res, next);
+  };
+
+  private getPhotoFromS3 = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.getAvatar(req, res, next);
   };
 }

@@ -7,6 +7,8 @@ const jwt_service_1 = require("../../core/jwt/jwt.service");
 const user_model_1 = __importDefault(require("./user.model"));
 const error_response_util_1 = __importDefault(require("../../utils/error-response.util"));
 const error_types_setting_util_1 = require("../../utils/error-types-setting.util");
+const s3_service_1 = require("../../core/aws/s3.service");
+// import { uploadFile } from "@/utils/file.util";
 class UserService {
     model = user_model_1.default;
     createUser = async (req, res, next) => {
@@ -94,6 +96,42 @@ class UserService {
         }
         catch (error) {
             throw new Error(`Unable to delete this user <${req.params.id}>`);
+        }
+    };
+    setAvatar = async (req, res, next) => {
+        const user = await this.model.findById(req.params.id);
+        if (!user) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "User not found"));
+        }
+        if (!req.files) {
+            console.log("Deo co file nao het");
+            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], "Please upload a file"));
+        }
+        const file = req.files.file;
+        await (0, s3_service_1.uploadFile)(file);
+        const url = await (0, s3_service_1.getUrlFromS3)(file.name);
+        const result = await user.updateOne({ photo: url }, { new: true });
+        return res.status(200).json({
+            success: true,
+            message: `Successfully uploaded the photo to S3 bucket and update the avatar of user ${req.params.id}`,
+            data: result,
+        });
+    };
+    getAvatar = async (req, res, next) => {
+        const user = await this.model.findById(req.params.id);
+        if (!user) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "User not found"));
+        }
+        const key = req.params.key;
+        const s3Url = await (0, s3_service_1.getUrlFromS3)(key);
+        if (s3Url) {
+            res.status(200).json({
+                success: true,
+                data: s3Url,
+            });
+        }
+        else {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "URL does not exist on S3 bucket"));
         }
     };
 }

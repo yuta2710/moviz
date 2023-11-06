@@ -24,6 +24,10 @@ const validateEnv = () => {
         SMTP_PASSWORD: (0, envalid_1.str)(),
         FROM_EMAIL: (0, envalid_1.str)(),
         FROM_NAME: (0, envalid_1.str)(),
+        AWS_ACCESS_KEY_ID: (0, envalid_1.str)(),
+        AWS_SECRET_ACCESS_KEY: (0, envalid_1.str)(),
+        S3_REGION: (0, envalid_1.str)(),
+        S3_BUCKET: (0, envalid_1.str)(),
     });
 };
 exports.validateEnv = validateEnv;

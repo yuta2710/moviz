@@ -5,6 +5,9 @@ import userModel from "./user.model";
 import UserRegisterRequest from "./user.request";
 import ErrorResponse from "../../utils/error-response.util";
 import { ErrorType } from "../../utils/error-types-setting.util";
+import { getUrlFromS3, uploadFile } from "../../core/aws/s3.service";
+import { UploadedFile } from "express-fileupload";
+// import { uploadFile } from "@/utils/file.util";
 
 export default class UserService {
   private model = userModel;
@@ -113,6 +116,63 @@ export default class UserService {
           });
     } catch (error) {
       throw new Error(`Unable to delete this user <${req.params.id}>`);
+    }
+  };
+
+  setAvatar = async (req: Request, res: Response, next: NextFunction) => {
+    const user = await this.model.findById(req.params.id);
+
+    if (!user) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "User not found")
+      );
+    }
+    if (!req.files) {
+      console.log("Deo co file nao het");
+      return next(
+        new ErrorResponse(400, ErrorType["BAD_REQUEST"], "Please upload a file")
+      );
+    }
+
+    const file = req.files.file as UploadedFile;
+
+    await uploadFile(file);
+    const url = await getUrlFromS3(file.name as string);
+
+    const result = await user.updateOne({ photo: url }, { new: true });
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully uploaded the photo to S3 bucket and update the avatar of user ${req.params.id}`,
+      data: result,
+    });
+  };
+
+  getAvatar = async (req: Request, res: Response, next: NextFunction) => {
+    const user = await this.model.findById(req.params.id);
+
+    if (!user) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "User not found")
+      );
+    }
+
+    const key = req.params.key;
+    const s3Url = await getUrlFromS3(key);
+
+    if (s3Url) {
+      res.status(200).json({
+        success: true,
+        data: s3Url,
+      });
+    } else {
+      return next(
+        new ErrorResponse(
+          404,
+          ErrorType["NOT_FOUND"],
+          "URL does not exist on S3 bucket"
+        )
+      );
     }
   };
 }

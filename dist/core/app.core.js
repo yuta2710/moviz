@@ -11,6 +11,7 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const compression_1 = __importDefault(require("compression"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
 class App {
     express;
     port;
@@ -29,6 +30,7 @@ class App {
         this.express.use((0, compression_1.default)());
         this.express.use((0, cookie_parser_1.default)());
         this.express.use(express_1.default.json());
+        this.express.use((0, express_fileupload_1.default)());
     }
     initDbConnection() {
         (0, mongo_db_1.connectMongoDB)();

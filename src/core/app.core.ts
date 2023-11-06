@@ -7,6 +7,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
+import fileUpload from "express-fileupload";
 
 export default class App {
   public express: Application;
@@ -29,6 +30,7 @@ export default class App {
     this.express.use(compression());
     this.express.use(cookieParser());
     this.express.use(express.json());
+    this.express.use(fileUpload());
   }
   private initDbConnection(): void {
     connectMongoDB();
