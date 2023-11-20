@@ -35,6 +35,7 @@ class AuthService {
         return duoTokens;
     };
     getMe = async (req, res, next) => {
+        console.log("Hello bro", req.user.id);
         const user = await user_model_1.default
             .findById(req.user.id)
             .select("-password");

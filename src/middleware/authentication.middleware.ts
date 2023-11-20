@@ -12,14 +12,18 @@ export const protect = async (
   next: NextFunction
 ) => {
   let token;
+  console.log(req.headers);
   if (
     req.headers.authorization ||
     req.headers.authorization.startsWith("Bearer ")
   ) {
     token = req.headers.authorization.split("Bearer ")[1].trim();
+    console.log("Token kia", token);
   } else {
-    token = req.cookies.refreshToken;
+    token = req.cookies.accessToken;
   }
+
+  console.log(token);
 
   if (!token) {
     next(

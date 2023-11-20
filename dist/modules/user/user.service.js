@@ -8,7 +8,7 @@ const user_model_1 = __importDefault(require("./user.model"));
 const error_response_util_1 = __importDefault(require("../../utils/error-response.util"));
 const error_types_setting_util_1 = require("../../utils/error-types-setting.util");
 const s3_service_1 = require("../../core/aws/s3.service");
-const photo_type_setting_util_1 = require("../../utils/photo-type-setting.util");
+const checker_util_1 = require("../../utils/checker.util");
 class UserService {
     model = user_model_1.default;
     createUser = async (req, res, next) => {
@@ -24,7 +24,9 @@ class UserService {
             });
             return (0, jwt_service_1.createTokens)(user);
         }
-        catch (error) { }
+        catch (error) {
+            next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["INTERNAL_SERVER_ERROR"], "Unable to create this user"));
+        }
     };
     getUsers = async (req, res, next) => {
         try {
@@ -108,15 +110,7 @@ class UserService {
             return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], "Please upload a file"));
         }
         const file = req.files.file;
-        if (file.mimetype !== photo_type_setting_util_1.PhotoType["PNG"] &&
-            file.mimetype !== photo_type_setting_util_1.PhotoType["JPEG"] &&
-            file.mimetype !== photo_type_setting_util_1.PhotoType["JPG"] &&
-            file.mimetype !== photo_type_setting_util_1.PhotoType["WEBP"]) {
-            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], "Please upload an image"));
-        }
-        if (Number(file.size) > Number(process.env.MAX_FILE_UPLOAD)) {
-            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], `Please upload an image's size less than ${process.env.MAX_FILE_UPLOAD}`));
-        }
+        (0, checker_util_1.isValidAvatar)(file, next);
         await (0, s3_service_1.uploadFileToS3)(file);
         const url = await (0, s3_service_1.getUrlFromS3)(file.name);
         const result = await user.updateOne({ photo: url }, { new: true });

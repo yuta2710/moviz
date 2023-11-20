@@ -26,11 +26,13 @@ class AuthController {
             .route(`${this.path}/login`)
             .post((0, validation_middleware_1.validationMiddleware)(auth_validation_1.onLogin), this.login);
         this.router.route(`${this.path}/me`).get(authentication_middleware_1.protect, this.getMe);
-        this.router.route(`${this.path}/forgot-password`).post(this.forgotPassword);
+        this.router
+            .route(`${this.path}/forgot-password`)
+            .post(authentication_middleware_1.protect, this.forgotPassword);
         this.router
             .route(`${this.path}/reset-password-token/:resetPasswordToken`)
-            .put(this.resetPassword);
-        this.router.route(`${this.path}/logout`).get(this.logOut);
+            .put(authentication_middleware_1.protect, this.resetPassword);
+        this.router.route(`${this.path}/logout`).get(authentication_middleware_1.protect, this.logOut);
     }
     register = async (req, res, next) => {
         const duoTokens = await this.authService.register(req, res, next);
@@ -51,13 +53,13 @@ class AuthController {
             next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["UNAUTHORIZED"], "Something went wrong in returning duo tokens"));
             return;
         }
-        if ("refreshToken" in duoTokens) {
+        if ("accessToken" in duoTokens) {
             res
                 .status(200)
-                .cookie("refreshToken", duoTokens.refreshToken, {
+                .cookie("accessToken", duoTokens.accessToken, {
                 expires: new Date(Date.now() + Number(process.env.JWT_COOKIE_EXPIRE) * 24 * 60 * 1000),
                 httpOnly: true,
-                sameSite: "strict",
+                sameSite: "none",
                 secure: true,
             })
                 .json(duoTokens);

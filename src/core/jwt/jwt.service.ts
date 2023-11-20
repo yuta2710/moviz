@@ -27,16 +27,18 @@ export const createTokens = async (
   );
   const duoTokens: AuthResponse = { accessToken, refreshToken };
 
+  console.log(duoTokens);
+
   return duoTokens;
 };
 
 export const verifyToken = async (
-  refreshToken: string
+  accessToken: string
 ): Promise<Token | jwt.JsonWebTokenError> => {
   return new Promise((resolve, reject) => {
     jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_SECRET as jwt.Secret,
+      accessToken,
+      process.env.JWT_ACCESS_SECRET as jwt.Secret,
       (err, payload) => {
         if (err) reject(err);
         resolve(payload as Token);

@@ -11,13 +11,16 @@ const error_response_util_1 = __importDefault(require("../utils/error-response.u
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const protect = async (req, res, next) => {
     let token;
+    console.log(req.headers);
     if (req.headers.authorization ||
         req.headers.authorization.startsWith("Bearer ")) {
         token = req.headers.authorization.split("Bearer ")[1].trim();
+        console.log("Token kia", token);
     }
     else {
-        token = req.cookies.refreshToken;
+        token = req.cookies.accessToken;
     }
+    console.log(token);
     if (!token) {
         next(new error_response_util_1.default(401, error_types_setting_util_1.ErrorType["UNAUTHORIZED"], "Unauthorized to access this routedeedededed"));
         return;

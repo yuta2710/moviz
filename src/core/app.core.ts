@@ -35,9 +35,11 @@ export default class App {
   private initDbConnection(): void {
     connectMongoDB();
   }
+
   private initErrorHandler(): void {
     this.express.use(errorResponseMiddleware);
   }
+
   private initControllers(controllers: BaseController[]): void {
     controllers.map((controller) => {
       this.express.use(`/api/${process.env.API_VERSION_1}`, controller.router);
@@ -45,7 +47,6 @@ export default class App {
   }
 
   public listen() {
-    // console.log("PORT = ", this.port);
     this.express.listen(this.port, () => {
       console.log(`Server connected to ${process.env.HOST}:${this.port}`);
     });

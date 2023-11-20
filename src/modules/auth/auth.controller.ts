@@ -1,7 +1,6 @@
 import BaseController from "@/utils/base-controller.util";
 import { NextFunction, Request, Response, Router } from "express";
 import AuthService from "./auth.service";
-import AuthRequest from "./auth.request";
 import { validationMiddleware } from "../../middleware/validation.middleware";
 import { onCreate } from "../user/user.validation";
 import { onLogin } from "./auth.validation";
@@ -22,15 +21,22 @@ export default class AuthController implements BaseController {
     this.router
       .route(`${this.path}/register`)
       .post(validationMiddleware(onCreate), this.register);
+
     this.router
       .route(`${this.path}/login`)
+
       .post(validationMiddleware(onLogin), this.login);
     this.router.route(`${this.path}/me`).get(protect, this.getMe);
-    this.router.route(`${this.path}/forgot-password`).post(this.forgotPassword);
+
+    this.router
+      .route(`${this.path}/forgot-password`)
+      .post(protect, this.forgotPassword);
+
     this.router
       .route(`${this.path}/reset-password-token/:resetPasswordToken`)
-      .put(this.resetPassword);
-    this.router.route(`${this.path}/logout`).get(this.logOut);
+      .put(protect, this.resetPassword);
+
+    this.router.route(`${this.path}/logout`).get(protect, this.logOut);
   }
 
   private register = async (
@@ -70,15 +76,15 @@ export default class AuthController implements BaseController {
       );
       return;
     }
-    if ("refreshToken" in duoTokens) {
+    if ("accessToken" in duoTokens) {
       res
         .status(200)
-        .cookie("refreshToken", duoTokens.refreshToken, {
+        .cookie("accessToken", duoTokens.accessToken, {
           expires: new Date(
             Date.now() + Number(process.env.JWT_COOKIE_EXPIRE) * 24 * 60 * 1000
           ),
           httpOnly: true,
-          sameSite: "strict",
+          sameSite: "none",
           secure: true,
         })
         .json(duoTokens);

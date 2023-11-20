@@ -19,7 +19,6 @@ export default class AuthService {
     next: NextFunction
   ): Promise<{ accessToken: string; refreshToken: string } | Error> => {
     const duoTokens = await this.userService.createUser(req, res, next);
-
     return duoTokens;
   };
 
@@ -56,6 +55,7 @@ export default class AuthService {
   };
 
   public getMe = async (req: Request, res: Response, next: NextFunction) => {
+    console.log("Hello bro", req.user.id);
     const user: User = await userModel
       .findById(req.user.id)
       .select("-password");

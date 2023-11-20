@@ -7,6 +7,7 @@ import { ErrorType } from "../../utils/error-types-setting.util";
 import { getUrlFromS3, uploadFileToS3 } from "../../core/aws/s3.service";
 import { UploadedFile } from "express-fileupload";
 import { PhotoType } from "../../utils/photo-type-setting.util";
+import { isValidAvatar } from "../../utils/checker.util";
 
 export default class UserService {
   private model = userModel;
@@ -29,7 +30,15 @@ export default class UserService {
       });
 
       return createTokens(user);
-    } catch (error) {}
+    } catch (error) {
+      next(
+        new ErrorResponse(
+          404,
+          ErrorType["INTERNAL_SERVER_ERROR"],
+          "Unable to create this user"
+        )
+      );
+    }
   };
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -54,6 +63,7 @@ export default class UserService {
       );
     }
   };
+
   getUserById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await this.model.findById(req.params.id).exec();
@@ -135,31 +145,7 @@ export default class UserService {
 
     const file = req.files.file as UploadedFile;
 
-    if (
-      file.mimetype !== PhotoType["PNG"] &&
-      file.mimetype !== PhotoType["JPEG"] &&
-      file.mimetype !== PhotoType["JPG"] &&
-      file.mimetype !== PhotoType["WEBP"]
-    ) {
-      return next(
-        new ErrorResponse(
-          400,
-          ErrorType["BAD_REQUEST"],
-          "Please upload an image"
-        )
-      );
-    }
-
-    if (Number(file.size) > Number(process.env.MAX_FILE_UPLOAD)) {
-      return next(
-        new ErrorResponse(
-          400,
-          ErrorType["BAD_REQUEST"],
-          `Please upload an image's size less than ${process.env.MAX_FILE_UPLOAD}`
-        )
-      );
-    }
-
+    isValidAvatar(file, next);
     await uploadFileToS3(file);
 
     const url = await getUrlFromS3(file.name as string);

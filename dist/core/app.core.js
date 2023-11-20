@@ -44,7 +44,6 @@ class App {
         });
     }
     listen() {
-        // console.log("PORT = ", this.port);
         this.express.listen(this.port, () => {
             console.log(`Server connected to ${process.env.HOST}:${this.port}`);
         });

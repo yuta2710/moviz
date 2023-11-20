@@ -16,12 +16,13 @@ const createTokens = async (user) => {
         expiresIn: process.env.JWT_EXPIRE,
     });
     const duoTokens = { accessToken, refreshToken };
+    console.log(duoTokens);
     return duoTokens;
 };
 exports.createTokens = createTokens;
-const verifyToken = async (refreshToken) => {
+const verifyToken = async (accessToken) => {
     return new Promise((resolve, reject) => {
-        jsonwebtoken_1.default.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, payload) => {
+        jsonwebtoken_1.default.verify(accessToken, process.env.JWT_ACCESS_SECRET, (err, payload) => {
             if (err)
                 reject(err);
             resolve(payload);

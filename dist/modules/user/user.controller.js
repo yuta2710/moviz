@@ -7,6 +7,7 @@ const express_1 = require("express");
 const user_service_1 = __importDefault(require("./user.service"));
 const error_response_util_1 = __importDefault(require("../../utils/error-response.util"));
 const error_types_setting_util_1 = require("../../utils/error-types-setting.util");
+const authentication_middleware_1 = require("../../middleware/authentication.middleware");
 class UserController {
     path = "/users";
     router = (0, express_1.Router)();
@@ -15,13 +16,16 @@ class UserController {
         this.initRoutes();
     }
     initRoutes = () => {
-        this.router.route(`${this.path}`).get(this.getUsers).post(this.createUser);
+        this.router
+            .route(`${this.path}`)
+            .get(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.getUsers)
+            .post(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.createUser);
         this.router
             .route(`${this.path}/:id`)
-            .get(this.getUserById)
-            .put(this.updateUser)
-            .delete(this.deleteUser);
-        this.router.route(`${this.path}/:id/photo`).patch(this.setAvatar);
+            .get(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.getUserById)
+            .put(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.updateUser)
+            .delete(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.deleteUser);
+        this.router.route(`${this.path}/:id/photo`).patch(authentication_middleware_1.protect, this.setAvatar);
     };
     createUser = async (req, res, next) => {
         try {

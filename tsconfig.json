@@ -10,7 +10,8 @@
       "@/modules/*": ["modules/*"],
       "@/utils/*": ["utils/*"],
       "@/middleware/*": ["middleware/*"],
-      "@/core/*": ["core/*"]
+      "@/core/*": ["core/*"],
+      "@/data/*": ["data/*"]
     }
   },
   "include": ["src/**/*"]

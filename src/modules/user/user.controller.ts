@@ -3,6 +3,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import UserService from "./user.service";
 import ErrorResponse from "../../utils/error-response.util";
 import { ErrorType } from "../../utils/error-types-setting.util";
+import { authorize, protect } from "../../middleware/authentication.middleware";
 
 export default class UserController implements BaseController {
   path: string = "/users";
@@ -14,15 +15,18 @@ export default class UserController implements BaseController {
   }
 
   private initRoutes = (): void => {
-    this.router.route(`${this.path}`).get(this.getUsers).post(this.createUser);
+    this.router
+      .route(`${this.path}`)
+      .get(protect, authorize("admin"), this.getUsers)
+      .post(protect, authorize("admin"), this.createUser);
 
     this.router
       .route(`${this.path}/:id`)
-      .get(this.getUserById)
-      .put(this.updateUser)
-      .delete(this.deleteUser);
+      .get(protect, authorize("admin"), this.getUserById)
+      .put(protect, authorize("admin"), this.updateUser)
+      .delete(protect, authorize("admin"), this.deleteUser);
 
-    this.router.route(`${this.path}/:id/photo`).patch(this.setAvatar);
+    this.router.route(`${this.path}/:id/photo`).patch(protect, this.setAvatar);
   };
 
   private createUser = async (

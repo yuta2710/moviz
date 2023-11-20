@@ -31,9 +31,9 @@ const UserSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      enum: ["male", "female", "others"],
+      enum: ["m", "f", "o"],
       required: [true, "Please add a gender"],
-      default: "others",
+      default: "o",
     },
     role: {
       type: String,

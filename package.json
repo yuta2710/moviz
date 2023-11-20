@@ -5,6 +5,9 @@
   "main": "server.ts",
   "scripts": {
     "start": "tsc-watch --onSuccess \"node ./dist/server.js\"",
+    "migrate": "node ./dist/seeder.js",
+    "import": "npm run migrate -- -i",
+    "delete": "npm run migrate -- -d",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -49,12 +52,12 @@
     "nodemailer": "^6.9.7",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
-    "tsc-watch": "^6.0.4",
-    "typescript": "^5.1.6"
+    "tsc-watch": "^6.0.4"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/mongoose": "^5.11.97"
+    "@types/mongoose": "^5.11.97",
+    "typescript": "^5.2.2"
   }
 }
