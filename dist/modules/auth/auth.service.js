@@ -35,9 +35,8 @@ class AuthService {
         return duoTokens;
     };
     getMe = async (req, res, next) => {
-        console.log("Hello bro", req.user.id);
         const user = await user_model_1.default
-            .findById(req.user.id)
+            .findById(req.user._id)
             .select("-password");
         return user;
     };
@@ -73,8 +72,6 @@ class AuthService {
             resetPasswordToken: req.params.resetPasswordToken,
             resetPasswordExpired: { $gt: Date.now() },
         });
-        console.log(req.body.password);
-        console.log(updatedUser);
         if (!updatedUser) {
             return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["UNAUTHORIZED"], "Invalid token"));
         }

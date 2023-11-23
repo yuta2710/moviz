@@ -1,4 +1,3 @@
-import UserRegisterRequest from "../user/user.request";
 import UserService from "../user/user.service";
 import AuthRequest from "./auth.request";
 import userModel from "../user/user.model";
@@ -7,7 +6,6 @@ import { createTokens } from "../../core/jwt/jwt.service";
 import { NextFunction, Request, Response } from "express";
 import ErrorResponse from "../../utils/error-response.util";
 import { sendEmail } from "../../utils/send-email.util";
-import crypto from "crypto";
 import { ErrorType } from "../../utils/error-types-setting.util";
 
 export default class AuthService {
@@ -51,13 +49,13 @@ export default class AuthService {
       user.refreshTokens.push(duoTokens.refreshToken as string);
       await user.save();
     }
+
     return duoTokens;
   };
 
   public getMe = async (req: Request, res: Response, next: NextFunction) => {
-    console.log("Hello bro", req.user.id);
     const user: User = await userModel
-      .findById(req.user.id)
+      .findById(req.user._id)
       .select("-password");
 
     return user;
@@ -114,10 +112,6 @@ export default class AuthService {
       resetPasswordToken: req.params.resetPasswordToken,
       resetPasswordExpired: { $gt: Date.now() },
     });
-
-    console.log(req.body.password);
-
-    console.log(updatedUser);
 
     if (!updatedUser) {
       return next(

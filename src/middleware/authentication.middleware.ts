@@ -54,7 +54,7 @@ export const protect = async (
     // console.log(payload);
 
     const user = await userModel.findById(payload.id).select("-password");
-    // console.log(user);
+    console.log("User from backend middleware = ", user);
 
     if (!user) {
       return next(

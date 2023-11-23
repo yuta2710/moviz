@@ -74,6 +74,9 @@ const UserSchema = new mongoose_1.default.Schema({
 }, {
     timestamps: true,
     versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    id: false,
 });
 UserSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
@@ -95,5 +98,8 @@ UserSchema.methods.getResetPasswordToken = function () {
     this.resetPasswordExpired = Date.now() + 10 * 60 * 1000;
     return resetToken;
 };
+// UserSchema.virtual("durationInHours").get(function () {
+//   return this.firstName + " fefefe";
+// });
 exports.default = (0, mongoose_1.model)("User", UserSchema);
 //# sourceMappingURL=user.model.js.map

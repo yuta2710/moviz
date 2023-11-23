@@ -1,8 +1,9 @@
 import { UploadedFile } from "express-fileupload";
 import { PhotoType } from "./photo-type-setting.util";
 import ErrorResponse from "./error-response.util";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ErrorType } from "./error-types-setting.util";
+import { Model } from "mongoose";
 
 export const isValidAvatar = (file: UploadedFile, next: NextFunction): void => {
   if (

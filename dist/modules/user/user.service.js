@@ -30,17 +30,18 @@ class UserService {
     };
     getUsers = async (req, res, next) => {
         try {
-            const users = await this.model.find().lean();
-            return users.length === 0
-                ? res.status(404).json({
+            const users = await this.model.find({});
+            if (users.length === 0) {
+                return res.status(404).json({
                     success: false,
                     type: error_types_setting_util_1.ErrorType["NOT_FOUND"],
                     message: "No user in this database",
-                })
-                : res.status(200).json({
-                    success: true,
-                    data: users,
                 });
+            }
+            return res.status(200).json({
+                success: true,
+                data: users,
+            });
         }
         catch (error) {
             return next(new error_response_util_1.default(500, error_types_setting_util_1.ErrorType["INTERNAL_SERVER_ERROR"], "Unable to get all users"));

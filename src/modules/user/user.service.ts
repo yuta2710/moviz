@@ -6,7 +6,6 @@ import ErrorResponse from "../../utils/error-response.util";
 import { ErrorType } from "../../utils/error-types-setting.util";
 import { getUrlFromS3, uploadFileToS3 } from "../../core/aws/s3.service";
 import { UploadedFile } from "express-fileupload";
-import { PhotoType } from "../../utils/photo-type-setting.util";
 import { isValidAvatar } from "../../utils/checker.util";
 
 export default class UserService {
@@ -42,17 +41,20 @@ export default class UserService {
   };
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const users = await this.model.find().lean();
-      return users.length === 0
-        ? res.status(404).json({
-            success: false,
-            type: ErrorType["NOT_FOUND"],
-            message: "No user in this database",
-          })
-        : res.status(200).json({
-            success: true,
-            data: users,
-          });
+      const users = await this.model.find({});
+
+      if (users.length === 0) {
+        return res.status(404).json({
+          success: false,
+          type: ErrorType["NOT_FOUND"],
+          message: "No user in this database",
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: users,
+      });
     } catch (error) {
       return next(
         new ErrorResponse(
@@ -109,6 +111,7 @@ export default class UserService {
       );
     }
   };
+
   deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await this.model.findByIdAndDelete(req.params.id);

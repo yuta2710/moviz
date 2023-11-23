@@ -52,6 +52,9 @@ const UserSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    id: false,
   }
 );
 
@@ -81,5 +84,9 @@ UserSchema.methods.getResetPasswordToken = function () {
 
   return resetToken;
 };
+
+// UserSchema.virtual("durationInHours").get(function () {
+//   return this.firstName + " fefefe";
+// });
 
 export default model<User>("User", UserSchema);

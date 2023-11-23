@@ -33,7 +33,7 @@ const protect = async (req, res, next) => {
         }
         // console.log(payload);
         const user = await user_model_1.default.findById(payload.id).select("-password");
-        // console.log(user);
+        console.log("User from backend middleware = ", user);
         if (!user) {
             return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "User not found"));
         }
