@@ -13,8 +13,9 @@ class UserService {
     model = user_model_1.default;
     createUser = async (req, res, next) => {
         try {
-            const { firstName, lastName, email, password, role, gender } = req.body;
+            const { firstName, lastName, username, email, password, role, gender } = req.body;
             const user = await this.model.create({
+                username,
                 firstName,
                 lastName,
                 email,

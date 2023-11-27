@@ -8,6 +8,7 @@ const joi_1 = __importDefault(require("joi"));
 exports.onCreate = joi_1.default.object({
     firstName: joi_1.default.string().required().trim(),
     lastName: joi_1.default.string().required().trim(),
+    username: joi_1.default.string().required().trim(),
     email: joi_1.default.string().email().required().trim(),
     password: joi_1.default.string().required().min(6).trim(),
     role: joi_1.default.string().required().trim(),

@@ -6,6 +6,11 @@ import crypto from "crypto";
 
 const UserSchema = new mongoose.Schema(
   {
+    username: {
+      type: String,
+      required: true,
+      match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
+    },
     firstName: {
       type: String,
       required: true,

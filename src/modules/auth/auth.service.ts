@@ -16,6 +16,7 @@ export default class AuthService {
     res: Response,
     next: NextFunction
   ): Promise<{ accessToken: string; refreshToken: string } | Error> => {
+    console.log(req.body);
     const duoTokens = await this.userService.createUser(req, res, next);
     return duoTokens;
   };

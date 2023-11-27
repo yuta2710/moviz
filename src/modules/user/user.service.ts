@@ -17,9 +17,10 @@ export default class UserService {
     next: NextFunction
   ): Promise<{ accessToken: string; refreshToken: string } | Error> => {
     try {
-      const { firstName, lastName, email, password, role, gender } =
+      const { firstName, lastName, username, email, password, role, gender } =
         req.body as UserRegisterRequest;
       const user = await this.model.create({
+        username,
         firstName,
         lastName,
         email,

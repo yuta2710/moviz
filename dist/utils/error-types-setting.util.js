@@ -8,5 +8,6 @@ var ErrorType;
     ErrorType["UNAUTHORIZED"] = "UNAUTHORIZED";
     ErrorType["FORBIDDEN"] = "FORBIDDEN";
     ErrorType["INTERNAL_SERVER_ERROR"] = "INTERNAL_SERVER_ERROR";
+    ErrorType["INVALID_EMAIL"] = "INVALID_EMAIL";
 })(ErrorType || (exports.ErrorType = ErrorType = {}));
 //# sourceMappingURL=error-types-setting.util.js.map

@@ -12,6 +12,7 @@ const error_types_setting_util_1 = require("../../utils/error-types-setting.util
 class AuthService {
     userService = new user_service_1.default();
     register = async (req, res, next) => {
+        console.log(req.body);
         const duoTokens = await this.userService.createUser(req, res, next);
         return duoTokens;
     };

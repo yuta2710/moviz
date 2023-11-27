@@ -30,6 +30,11 @@ const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const crypto_1 = __importDefault(require("crypto"));
 const UserSchema = new mongoose_1.default.Schema({
+    username: {
+        type: String,
+        required: true,
+        match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
+    },
     firstName: {
         type: String,
         required: true,
