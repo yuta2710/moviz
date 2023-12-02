@@ -29,6 +29,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const crypto_1 = __importDefault(require("crypto"));
+const letterboxd_api_1 = __importDefault(require("letterboxd-api"));
+// export type ReviewCustomization = Letterboxd & {
+//   film: {
+//     title: string;
+//     year: string;
+//     image: { tiny: string; medi: string; medium: string; large: string };
+//   };
+//   review?: string;
+// };
 const UserSchema = new mongoose_1.default.Schema({
     username: {
         type: String,
@@ -89,6 +98,13 @@ UserSchema.pre("save", async function (next) {
     }
     const salt = await bcryptjs_1.default.genSalt(10);
     this.password = await bcryptjs_1.default.hash(this.password, salt);
+    const data = await (0, letterboxd_api_1.default)(this.username);
+    console.log("User data = ", data);
+    if (data.length > 0) {
+        UserSchema.virtual("reviews").get(function () {
+            return data;
+        });
+    }
 });
 UserSchema.methods.isValidPassword = async function (currentPassword) {
     console.log(this.password, currentPassword);
@@ -103,8 +119,5 @@ UserSchema.methods.getResetPasswordToken = function () {
     this.resetPasswordExpired = Date.now() + 10 * 60 * 1000;
     return resetToken;
 };
-// UserSchema.virtual("durationInHours").get(function () {
-//   return this.firstName + " fefefe";
-// });
 exports.default = (0, mongoose_1.model)("User", UserSchema);
 //# sourceMappingURL=user.model.js.map

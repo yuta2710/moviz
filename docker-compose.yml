@@ -3,9 +3,9 @@ services:
   mongo_db:
     container_name: sepm_mongo_container
     image: mongo:latest
-    restart: always
+    restart: no
     volumes:
-      - mongo_db:/data/b
+      - mongo_db:/docker build -t moviz_frontend .data/b
     ports:
       - '27017:27017'
 

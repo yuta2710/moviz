@@ -7,6 +7,12 @@ import { ErrorType } from "../../utils/error-types-setting.util";
 import { getUrlFromS3, uploadFileToS3 } from "../../core/aws/s3.service";
 import { UploadedFile } from "express-fileupload";
 import { isValidAvatar } from "../../utils/checker.util";
+import { ReviewCustomization } from "../reviews/review.interface";
+import letterboxd from "letterboxd-api";
+
+interface UserUpdateReviewProps {
+  newReviews: ReviewCustomization[];
+}
 
 export default class UserService {
   private model = userModel;
@@ -160,5 +166,42 @@ export default class UserService {
       message: `Successfully uploaded the photo to S3 bucket and update the avatar of user ${req.params.id}`,
       data: result,
     });
+  };
+
+  refreshCurrentUserReviewsFromLetterboxdServer = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const data = (await letterboxd(
+        req.user.username
+      )) as ReviewCustomization[];
+
+      console.log("Data of user", data);
+
+      console.log(req.params.id);
+
+      // const updatedUser = await userModel.findById(req.params.id);
+
+      // console.log(updatedUser);
+
+      // updatedUser.reviews = data;
+
+      // await updatedUser.save();
+
+      res.status(200).json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      return next(
+        new ErrorResponse(
+          400,
+          ErrorType["BAD_REQUEST"],
+          `Unable to update this user <${req.params.id}>`
+        )
+      );
+    }
   };
 }

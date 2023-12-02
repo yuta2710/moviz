@@ -26,6 +26,10 @@ export default class UserController implements BaseController {
       .put(protect, authorize("admin"), this.updateUser)
       .delete(protect, authorize("admin"), this.deleteUser);
 
+    this.router
+      .route(`${this.path}/:id/reviews`)
+      .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
+
     this.router.route(`${this.path}/:id/photo`).patch(protect, this.setAvatar);
   };
 
@@ -90,5 +94,17 @@ export default class UserController implements BaseController {
     next: NextFunction
   ): Promise<Response | void> => {
     return this.service.setAvatar(req, res, next);
+  };
+
+  private refreshCurrentUserReviewsFromLetterboxdServer = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.refreshCurrentUserReviewsFromLetterboxdServer(
+      req,
+      res,
+      next
+    );
   };
 }

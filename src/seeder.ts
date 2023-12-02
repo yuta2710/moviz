@@ -1,22 +1,14 @@
 import mongoose from "mongoose";
-import { connectMongoDB } from "./core/db/mongo.db";
 import userModel from "./modules/user/user.model";
 import "dotenv/config";
 
-// console.log(process.env.MONGO_URI);
-
-// connectMongoDB();
-
 const { MONGO_URI } = process.env;
 try {
-  // console.log(MONGO_URI);
   mongoose.connect(MONGO_URI);
   console.log("Database connected successfully");
 } catch (error) {
   throw new Error(`Failed to connected MongoDB`);
 }
-
-console.log("dededded");
 
 const mockUsers = [
   {
@@ -57,11 +49,9 @@ const mockUsers = [
   },
 ];
 
-console.log(process.argv[1], process.argv[2]);
 export const importData = async () => {
   try {
     await userModel.insertMany(mockUsers);
-    process.exit(1);
   } catch (error) {
     console.log(error);
   }

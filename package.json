@@ -5,7 +5,7 @@
   "main": "server.ts",
   "scripts": {
     "start": "tsc-watch --onSuccess \"node ./dist/server.js\"",
-    "migrate": "tsc \"node ./dist/seeder.js\"",
+    "migrate": "tsc-watch --onSuccess \"node ./dist/seeder.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -26,7 +26,7 @@
     "@types/module-alias": "^2.0.2",
     "@types/morgan": "^1.9.5",
     "@types/node-fetch": "^2.6.9",
-    "@types/nodemailer": "^6.4.13",
+    "@types/nodemailer": "^6.4.14",
     "@types/nodemon": "^1.19.2",
     "aws-sdk": "^2.1488.0",
     "bcrypt": "^5.1.1",
@@ -56,7 +56,11 @@
   "devDependencies": {
     "@types/colors": "^1.2.1",
     "@types/mongoose": "^5.11.97",
+    "@types/node-schedule": "^2.1.4",
     "colors": "^1.4.0",
+    "letterboxd-api": "^1.0.2",
+    "node-schedule": "^2.1.1",
+    "toad-scheduler": "^3.0.0",
     "tsc-watch": "^6.0.4",
     "typescript": "^5.3.2"
   }
