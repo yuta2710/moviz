@@ -28,6 +28,7 @@ const validateEnv = () => {
         AWS_SECRET_ACCESS_KEY: (0, envalid_1.str)(),
         S3_REGION: (0, envalid_1.str)(),
         S3_BUCKET: (0, envalid_1.str)(),
+        NEW_YORK_TIMES_API_KEY: (0, envalid_1.str)(),
     });
 };
 exports.validateEnv = validateEnv;
