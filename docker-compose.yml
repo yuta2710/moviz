@@ -9,6 +9,16 @@ services:
     ports:
       - '27017:27017'
 
+  redis:
+    image: redis:alpine3.18
+    container_name: moviz_cache_server
+    restart: unless-stopped
+    command: [ "redis-server", "--bind", "redis", "--port", "6379" ]
+    ports:
+      - '6379:6379'
+    expose:
+      - 6379
+
   api:
     build: .
     ports:
@@ -19,6 +29,7 @@ services:
       NAME: "YUTA"
     depends_on:
       - mongo_db
+      - redis
     volumes:
       - .:/usr/src/app
 volumes:
