@@ -42,7 +42,8 @@ const UserSchema = new mongoose_1.default.Schema({
     username: {
         type: String,
         required: true,
-        match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
+        unique: true,
+        // match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
     },
     firstName: {
         type: String,

@@ -3,7 +3,7 @@
 // import { Router } from "express";
 Object.defineProperty(exports, "__esModule", { value: true });
 // export default class UserController implements BaseController {
-//   path: string = "/users";
+//   path: string = "/reviews";
 //   router: Router = Router();
 //   constructor() {
 //     this.initRoutes();

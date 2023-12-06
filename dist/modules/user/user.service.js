@@ -9,7 +9,6 @@ const error_response_util_1 = __importDefault(require("../../utils/error-respons
 const error_types_setting_util_1 = require("../../utils/error-types-setting.util");
 const s3_service_1 = require("../../core/aws/s3.service");
 const checker_util_1 = require("../../utils/checker.util");
-const letterboxd_api_1 = __importDefault(require("letterboxd-api"));
 class UserService {
     model = user_model_1.default;
     createUser = async (req, res, next) => {
@@ -122,24 +121,6 @@ class UserService {
             message: `Successfully uploaded the photo to S3 bucket and update the avatar of user ${req.params.id}`,
             data: result,
         });
-    };
-    refreshCurrentUserReviewsFromLetterboxdServer = async (req, res, next) => {
-        try {
-            const data = (await (0, letterboxd_api_1.default)(req.user.username));
-            console.log("Data of user", data);
-            console.log(req.params.id);
-            // const updatedUser = await userModel.findById(req.params.id);
-            // console.log(updatedUser);
-            // updatedUser.reviews = data;
-            // await updatedUser.save();
-            res.status(200).json({
-                success: true,
-                data,
-            });
-        }
-        catch (error) {
-            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], `Unable to update this user <${req.params.id}>`));
-        }
     };
 }
 exports.default = UserService;

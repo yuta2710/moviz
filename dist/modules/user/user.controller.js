@@ -25,9 +25,9 @@ class UserController {
             .get(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.getUserById)
             .put(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.updateUser)
             .delete(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.deleteUser);
-        this.router
-            .route(`${this.path}/:id/reviews`)
-            .get(authentication_middleware_1.protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
+        // this.router
+        //   .route(`${this.path}/:id/reviews`)
+        //   .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
         this.router.route(`${this.path}/:id/photo`).patch(authentication_middleware_1.protect, this.setAvatar);
     };
     createUser = async (req, res, next) => {
@@ -56,9 +56,6 @@ class UserController {
     };
     setAvatar = async (req, res, next) => {
         return this.service.setAvatar(req, res, next);
-    };
-    refreshCurrentUserReviewsFromLetterboxdServer = async (req, res, next) => {
-        return this.service.refreshCurrentUserReviewsFromLetterboxdServer(req, res, next);
     };
 }
 exports.default = UserController;

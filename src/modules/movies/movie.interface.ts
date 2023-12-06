@@ -14,3 +14,26 @@ export interface Movie {
   vote_average: number;
   vote_count: number;
 }
+
+export interface MovieDetailsProps {
+  id: number;
+  page: number;
+  results: MovieReviewProps[];
+}
+
+export interface AuthorDetails {
+  name: string;
+  username: string;
+  avatar_path: string;
+  rating: number;
+}
+
+export interface MovieReviewProps {
+  author: string;
+  author_details: AuthorDetails;
+  content: string;
+  created_at: string;
+  id: string;
+  updated_at: string;
+  url: string;
+}

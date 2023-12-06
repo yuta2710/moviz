@@ -2,7 +2,7 @@
 // import { Router } from "express";
 
 // export default class UserController implements BaseController {
-//   path: string = "/users";
+//   path: string = "/reviews";
 //   router: Router = Router();
 
 //   constructor() {
