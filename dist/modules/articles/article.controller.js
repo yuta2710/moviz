@@ -13,7 +13,7 @@ class ArticleController {
         this.initRoutes();
     }
     initRoutes = () => {
-        this.router.route(`${this.path}/:page`).get(this.getArticles);
+        this.router.route(`${this.path}`).get(this.getArticles);
     };
     getArticles = async (req, res, next) => {
         return this.service.getArticles(req, res, next);

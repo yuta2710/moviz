@@ -12,7 +12,7 @@ export default class ArticleController implements BaseController {
   }
 
   private initRoutes = (): void => {
-    this.router.route(`${this.path}/:page`).get(this.getArticles);
+    this.router.route(`${this.path}`).get(this.getArticles);
   };
 
   private getArticles = async (

@@ -8,7 +8,7 @@ const node_fetch_1 = __importDefault(require("node-fetch"));
 class ArticleService {
     NY_TIMES_ARTICLES_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json?fq=section_name%3A%22Movies%22%20AND%20type_of_material%3A%22Review%22";
     getArticles = async (req, res, next) => {
-        const page = req.params.page;
+        const page = req.query.page;
         const CACHE_KEY = `articles?page=${page}`;
         try {
             const cached = await (0, cache_util_1.getOrSetCache)(CACHE_KEY, async () => {

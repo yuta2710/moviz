@@ -7,7 +7,7 @@ export default class ArticleService {
     "https://api.nytimes.com/svc/search/v2/articlesearch.json?fq=section_name%3A%22Movies%22%20AND%20type_of_material%3A%22Review%22";
 
   getArticles = async (req: Request, res: Response, next: NextFunction) => {
-    const page = req.params.page;
+    const page = req.query.page;
     const CACHE_KEY = `articles?page=${page}`;
 
     try {
