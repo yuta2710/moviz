@@ -9,10 +9,11 @@ import userModel from "../user/user.model";
 import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
+const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
+
 export default class MovieService {
   getMovies = async (req: Request, res: Response, next: NextFunction) => {
     const page = req.query.page;
-    const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
     const CACHE_KEY = `movies?page=${page}`;
 
     const url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;
@@ -45,6 +46,46 @@ export default class MovieService {
     } catch (error) {
       res.status(500).json({
         success: false,
+        error: "Internal Server Error",
+      });
+    }
+  };
+
+  getMovieById = async (req: Request, res: Response, next: NextFunction) => {
+    // 872585
+    const id = req.params.id;
+
+    console.log(id);
+    const url = `https://api.themoviedb.org/3/movie/${id}`;
+    const options = {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
+      },
+    };
+    const CACHE_MOVIE_DETAIL_KEY = `movie<${id}>`;
+    try {
+      const cached = await getOrSetCache(CACHE_MOVIE_DETAIL_KEY, async () => {
+        const response = await fetch(url, options);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const json = await response.json();
+
+        console.log("Json = ", json);
+        return json;
+      });
+
+      res.status(200).json({
+        success: true,
+        data: cached,
+      });
+    } catch (error) {
+      res.status(200).json({
+        success: true,
         error: "Internal Server Error",
       });
     }

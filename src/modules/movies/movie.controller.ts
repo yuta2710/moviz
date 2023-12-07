@@ -13,6 +13,7 @@ export default class MovieController implements BaseController {
 
   private initRoutes = (): void => {
     this.router.route(`${this.path}`).get(this.getMovies);
+    this.router.route(`${this.path}/:id`).get(this.getMovieById);
     this.router
       .route(`${this.path}/:movieId/reviews`)
       .get(this.getReviewsByMovieId);
@@ -32,5 +33,13 @@ export default class MovieController implements BaseController {
     next: NextFunction
   ): Promise<void> => {
     return this.service.getReviewsByMovieId(req, res, next);
+  };
+
+  private getMovieById = (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    return this.service.getMovieById(req, res, next);
   };
 }

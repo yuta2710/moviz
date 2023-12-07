@@ -7,10 +7,10 @@ const cache_util_1 = require("../../utils/cache.util");
 const user_model_1 = __importDefault(require("../user/user.model"));
 const lodash_1 = __importDefault(require("lodash"));
 const faker_1 = require("@faker-js/faker");
+const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 class MovieService {
     getMovies = async (req, res, next) => {
         const page = req.query.page;
-        const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
         const CACHE_KEY = `movies?page=${page}`;
         const url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;
         const options = {
@@ -38,6 +38,41 @@ class MovieService {
         catch (error) {
             res.status(500).json({
                 success: false,
+                error: "Internal Server Error",
+            });
+        }
+    };
+    getMovieById = async (req, res, next) => {
+        // 872585
+        const id = req.params.id;
+        console.log(id);
+        const url = `https://api.themoviedb.org/3/movie/${id}`;
+        const options = {
+            method: "GET",
+            headers: {
+                accept: "application/json",
+                Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
+            },
+        };
+        const CACHE_MOVIE_DETAIL_KEY = `movie<${id}>`;
+        try {
+            const cached = await (0, cache_util_1.getOrSetCache)(CACHE_MOVIE_DETAIL_KEY, async () => {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const json = await response.json();
+                console.log("Json = ", json);
+                return json;
+            });
+            res.status(200).json({
+                success: true,
+                data: cached,
+            });
+        }
+        catch (error) {
+            res.status(200).json({
+                success: true,
                 error: "Internal Server Error",
             });
         }
