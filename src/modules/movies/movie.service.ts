@@ -10,24 +10,23 @@ import _ from "lodash";
 import { faker } from "@faker-js/faker";
 
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
+const OPTIONS = {
+  method: "GET",
+  headers: {
+    accept: "application/json",
+    Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
+  },
+};
 
 export default class MovieService {
   getMovies = async (req: Request, res: Response, next: NextFunction) => {
     const page = req.query.page;
     const CACHE_KEY = `movies?page=${page}`;
-
     const url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
-      },
-    };
 
     try {
       const cached = await getOrSetCache(CACHE_KEY, async () => {
-        const response = await fetch(url, options);
+        const response = await fetch(url, OPTIONS);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -57,7 +56,7 @@ export default class MovieService {
 
     console.log(id);
     const url = `https://api.themoviedb.org/3/movie/${id}`;
-    const options = {
+    const OPTIONS = {
       method: "GET",
       headers: {
         accept: "application/json",
@@ -67,7 +66,7 @@ export default class MovieService {
     const CACHE_MOVIE_DETAIL_KEY = `movie<${id}>`;
     try {
       const cached = await getOrSetCache(CACHE_MOVIE_DETAIL_KEY, async () => {
-        const response = await fetch(url, options);
+        const response = await fetch(url, OPTIONS);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -97,23 +96,14 @@ export default class MovieService {
     next: NextFunction
   ) => {
     const { movieId } = req.params;
-
-    const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
     const CACHE_KEY = `film_${movieId}_reviews`;
 
     const url = `https://api.themoviedb.org/3/movie/${movieId}/reviews`;
-    const options = {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
-      },
-    };
     const newUsers = [];
 
     try {
       const cached: any = await getOrSetCache(CACHE_KEY, async () => {
-        const response = await fetch(url, options);
+        const response = await fetch(url, OPTIONS);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -150,6 +140,38 @@ export default class MovieService {
         console.error("Error creating user:", error);
         // Handle the error appropriately
       }
+
+      res.status(200).json({
+        success: true,
+        data: cached,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: "Internal Server Error",
+      });
+    }
+  };
+
+  getCastsByMovieId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    const id = req.params.movieId;
+    const CACHE_CASTS_KEY = `movie<${id}>-casts`;
+    const ENDPOINT = `https://api.themoviedb.org/3/movie/${id}/credits`;
+    try {
+      const cached = await getOrSetCache(CACHE_CASTS_KEY, async () => {
+        const response = await fetch(ENDPOINT, OPTIONS);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const json = await response.json();
+        return json;
+      });
 
       res.status(200).json({
         success: true,

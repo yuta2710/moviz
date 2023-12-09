@@ -18,6 +18,9 @@ class MovieController {
         this.router
             .route(`${this.path}/:movieId/reviews`)
             .get(this.getReviewsByMovieId);
+        this.router
+            .route(`${this.path}/:movieId/casts`)
+            .get(this.getCastsByMovieId);
     };
     getMovies = (req, res, next) => {
         return this.service.getMovies(req, res, next);
@@ -27,6 +30,9 @@ class MovieController {
     };
     getMovieById = (req, res, next) => {
         return this.service.getMovieById(req, res, next);
+    };
+    getCastsByMovieId = (req, res, next) => {
+        return this.service.getCastsByMovieId(req, res, next);
     };
 }
 exports.default = MovieController;
