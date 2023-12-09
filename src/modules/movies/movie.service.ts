@@ -21,35 +21,31 @@ const OPTIONS = {
 export default class MovieService {
   getMovies = async (req: Request, res: Response, next: NextFunction) => {
     const page = req.query.page;
-    const CACHE_KEY = `movies?page=${page}`;
-    const urlArr = [];
-    const queryObj = req.query;
-    const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US`;
+    // console.log(req.query["primary_release_date.gte"].toString().split("-")[0]);
+    // const year = req.query["primary_release_date.gte"].toString().split("-")[0];
+    const CACHE_KEY = `movies:${JSON.stringify(req.query)}`;
+
+    console.log(CACHE_KEY);
+
+    const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}`;
 
     console.table(req.query);
 
-    urlArr.push(templateStr);
-
-    for (let queryKey in queryObj) {
-      const queryStr = `&${queryKey}=${queryObj[queryKey]}`;
-      urlArr.push(queryStr);
-    }
-
-    console.log(urlArr);
-
-    const extractEndpoint = urlArr.join("");
-
-    console.log("Extract endpoint = ", extractEndpoint);
-
     try {
+      // console.log("Extract endpoint = ", extractEndpoint);
       const cached = await getOrSetCache(CACHE_KEY, async () => {
-        const response = await fetch(extractEndpoint, OPTIONS);
+        console.log("URL = ", templateStr);
+        const response = await fetch(templateStr, OPTIONS);
+
+        console.log("Response = ", response);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const json = await response.json();
+
+        console.log("The Json extracting = ", json);
         return json;
       });
 
