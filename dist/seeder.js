@@ -7,18 +7,14 @@ exports.importData = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_model_1 = __importDefault(require("./modules/user/user.model"));
 require("dotenv/config");
-// console.log(process.env.MONGO_URI);
-// connectMongoDB();
 const { MONGO_URI } = process.env;
 try {
-    // console.log(MONGO_URI);
     mongoose_1.default.connect(MONGO_URI);
     console.log("Database connected successfully");
 }
 catch (error) {
     throw new Error(`Failed to connected MongoDB`);
 }
-console.log("dededded");
 const mockUsers = [
     {
         username: "admin_test",
@@ -57,11 +53,9 @@ const mockUsers = [
         role: "manager",
     },
 ];
-console.log(process.argv[1], process.argv[2]);
 const importData = async () => {
     try {
         await user_model_1.default.insertMany(mockUsers);
-        process.exit(1);
     }
     catch (error) {
         console.log(error);

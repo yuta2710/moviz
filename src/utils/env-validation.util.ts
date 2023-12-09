@@ -26,5 +26,9 @@ export const validateEnv = (): void => {
     AWS_SECRET_ACCESS_KEY: str(),
     S3_REGION: str(),
     S3_BUCKET: str(),
+    NEW_YORK_TIMES_API_KEY: str(),
+    THE_MOVIE_DB_TOKEN: str(),
+    REDIS_HOST: str(),
+    REDIS_PORT: str(),
   });
 };

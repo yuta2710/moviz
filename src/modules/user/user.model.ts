@@ -3,13 +3,25 @@ import User from "./user.interface";
 import { NextFunction } from "express";
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
+import letterboxd, { Letterboxd } from "letterboxd-api";
+import schedule from "node-schedule";
+
+// export type ReviewCustomization = Letterboxd & {
+//   film: {
+//     title: string;
+//     year: string;
+//     image: { tiny: string; medi: string; medium: string; large: string };
+//   };
+//   review?: string;
+// };
 
 const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       required: true,
-      match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
+      unique: true,
+      // match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
     },
     firstName: {
       type: String,
@@ -70,6 +82,15 @@ UserSchema.pre<User>("save", async function (next: NextFunction) {
 
   const salt = await bcryptjs.genSalt(10);
   this.password = await bcryptjs.hash(this.password, salt);
+  const data = await letterboxd(this.username);
+
+  console.log("User data = ", data);
+
+  if (data.length > 0) {
+    UserSchema.virtual("reviews").get(function () {
+      return data;
+    });
+  }
 });
 
 UserSchema.methods.isValidPassword = async function (currentPassword: string) {
@@ -89,9 +110,5 @@ UserSchema.methods.getResetPasswordToken = function () {
 
   return resetToken;
 };
-
-// UserSchema.virtual("durationInHours").get(function () {
-//   return this.firstName + " fefefe";
-// });
 
 export default model<User>("User", UserSchema);

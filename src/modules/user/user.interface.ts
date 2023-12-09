@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+// import { ReviewCustomization } from "../reviews/review.interface";
 
 export default interface User extends Document {
   firstName: string;
@@ -12,5 +13,6 @@ export default interface User extends Document {
   resetPasswordToken?: string;
   resetPasswordExpired?: string;
   refreshTokens?: [string];
+  // reviews?: ReviewCustomization[];
   getResetPasswordToken?(): void;
 }
