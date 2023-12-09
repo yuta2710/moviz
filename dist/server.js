@@ -8,6 +8,14 @@ require("dotenv/config");
 const user_controller_1 = __importDefault(require("./modules/user/user.controller"));
 const auth_controller_1 = __importDefault(require("./modules/auth/auth.controller"));
 const refresh_token_controller_1 = __importDefault(require("./modules/refresh-token/refresh-token.controller"));
-const app = new app_core_1.default([new user_controller_1.default(), new auth_controller_1.default(), new refresh_token_controller_1.default()], Number(process.env.PORT));
+const article_controller_1 = __importDefault(require("./modules/articles/article.controller"));
+const movie_controller_1 = __importDefault(require("./modules/movies/movie.controller"));
+const app = new app_core_1.default([
+    new user_controller_1.default(),
+    new auth_controller_1.default(),
+    new refresh_token_controller_1.default(),
+    new article_controller_1.default(),
+    new movie_controller_1.default(),
+], Number(process.env.PORT));
 app.listen();
 //# sourceMappingURL=server.js.map

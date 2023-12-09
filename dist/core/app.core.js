@@ -12,6 +12,8 @@ const helmet_1 = __importDefault(require("helmet"));
 const compression_1 = __importDefault(require("compression"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
+const cache_util_1 = require("../utils/cache.util");
+// import { connectRedisServer } from "@/utils/cache.util";
 class App {
     express;
     port;
@@ -19,6 +21,7 @@ class App {
         this.express = (0, express_1.default)();
         this.port = port;
         this.initDbConnection();
+        this.initRedisConnection();
         this.initMiddleware();
         this.initControllers(controllers);
         this.initErrorHandler();
@@ -34,6 +37,14 @@ class App {
     }
     initDbConnection() {
         (0, mongo_db_1.connectMongoDB)();
+    }
+    async initRedisConnection() {
+        cache_util_1.redis.on("connect", () => {
+            console.log("Redis connected successfully!");
+        });
+        cache_util_1.redis.on("error", (error) => {
+            console.error("Redis connection failed:", error);
+        });
     }
     initErrorHandler() {
         this.express.use(error_middleware_1.errorResponseMiddleware);
