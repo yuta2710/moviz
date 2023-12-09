@@ -19,15 +19,25 @@ class MovieService {
     getMovies = async (req, res, next) => {
         const page = req.query.page;
         const CACHE_KEY = `movies?page=${page}`;
-        const url = `https://api.themoviedb.org/3/movie/popular?language=en-US&page=${page}`;
+        const urlArr = [];
+        const queryObj = req.query;
+        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US`;
+        console.table(req.query);
+        urlArr.push(templateStr);
+        for (let queryKey in queryObj) {
+            const queryStr = `&${queryKey}=${queryObj[queryKey]}`;
+            urlArr.push(queryStr);
+        }
+        console.log(urlArr);
+        const extractEndpoint = urlArr.join("");
+        console.log("Extract endpoint = ", extractEndpoint);
         try {
             const cached = await (0, cache_util_1.getOrSetCache)(CACHE_KEY, async () => {
-                const response = await fetch(url, OPTIONS);
+                const response = await fetch(extractEndpoint, OPTIONS);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const json = await response.json();
-                console.log("Json = ", json);
                 return json;
             });
             res.status(200).json({
