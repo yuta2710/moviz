@@ -22,8 +22,9 @@ class MovieService {
         // const year = req.query["primary_release_date.gte"].toString().split("-")[0];
         const CACHE_KEY = `movies:${JSON.stringify(req.query)}`;
         console.log(CACHE_KEY);
-        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}`;
+        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
         console.table(req.query);
+        console.log(templateStr);
         try {
             // console.log("Extract endpoint = ", extractEndpoint);
             const cached = await (0, cache_util_1.getOrSetCache)(CACHE_KEY, async () => {
