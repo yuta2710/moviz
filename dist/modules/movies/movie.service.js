@@ -7,6 +7,8 @@ const cache_util_1 = require("../../utils/cache.util");
 const user_model_1 = __importDefault(require("../user/user.model"));
 const lodash_1 = __importDefault(require("lodash"));
 const faker_1 = require("@faker-js/faker");
+const index_util_1 = require("../../utils/index.util");
+const review_model_1 = __importDefault(require("../reviews/review.model"));
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
     method: "GET",
@@ -18,12 +20,11 @@ const OPTIONS = {
 class MovieService {
     getMovies = async (req, res, next) => {
         const page = req.query.page;
-        // console.log(req.query["primary_release_date.gte"].toString().split("-")[0]);
-        // const year = req.query["primary_release_date.gte"].toString().split("-")[0];
         const CACHE_KEY = `movies:${JSON.stringify(req.query)}`;
         console.log(CACHE_KEY);
-        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}`;
+        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
         console.table(req.query);
+        console.log(templateStr);
         try {
             // console.log("Extract endpoint = ", extractEndpoint);
             const cached = await (0, cache_util_1.getOrSetCache)(CACHE_KEY, async () => {
@@ -98,6 +99,21 @@ class MovieService {
                 const json = await response.json();
                 return json;
             });
+            const reviewsFromMyServer = await review_model_1.default.find({});
+            const onCompleteCached = cached.results.map((item) => {
+                const camelCaseItem = lodash_1.default.mapKeys(item, (value, key) => {
+                    if (key === "created_at" || key === "updated_at") {
+                        return lodash_1.default.camelCase(key);
+                    }
+                    return key;
+                });
+                return camelCaseItem;
+            });
+            console.log("Alo");
+            console.log("Super case data = ", onCompleteCached);
+            for (const data of reviewsFromMyServer) {
+                onCompleteCached.push(data);
+            }
             const userDetails = cached.results;
             for (const user of userDetails) {
                 const userExist = await user_model_1.default.findOne({
@@ -106,7 +122,7 @@ class MovieService {
                 if (userExist === null) {
                     const newUser = {
                         username: user.author_details.username,
-                        email: faker_1.faker.internet.email(),
+                        email: (0, index_util_1.lowercaseFirstLetter)(faker_1.faker.internet.email()),
                         firstName: faker_1.faker.person.firstName(),
                         lastName: faker_1.faker.person.lastName(),
                         password: "123456",
@@ -126,7 +142,7 @@ class MovieService {
             }
             res.status(200).json({
                 success: true,
-                data: cached,
+                data: onCompleteCached,
             });
         }
         catch (error) {
