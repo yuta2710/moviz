@@ -11,6 +11,7 @@ const refresh_token_controller_1 = __importDefault(require("./modules/refresh-to
 const article_controller_1 = __importDefault(require("./modules/articles/article.controller"));
 const movie_controller_1 = __importDefault(require("./modules/movies/movie.controller"));
 const review_controller_1 = __importDefault(require("./modules/reviews/review.controller"));
+const profanity_1 = require("@2toad/profanity");
 const app = new app_core_1.default([
     new user_controller_1.default(),
     new auth_controller_1.default(),
@@ -74,5 +75,6 @@ const apiResponse = [
 //   return camelCaseItem;
 // });
 // console.log("Camelcase API = ", camelCaseApiResponse);
+console.log("Is tuc tieu ? ", profanity_1.profanity.exists("I like big butts and I cannot lie"));
 app.listen();
 //# sourceMappingURL=server.js.map

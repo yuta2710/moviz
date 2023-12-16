@@ -109,8 +109,6 @@ class MovieService {
                 });
                 return camelCaseItem;
             });
-            console.log("Alo");
-            console.log("Super case data = ", onCompleteCached);
             for (const data of reviewsFromMyServer) {
                 onCompleteCached.push(data);
             }
