@@ -147,7 +147,6 @@ export default class MovieService {
       });
 
       for (const data of reviewsFromMyServer) {
-        // console.log("Super data");
         onCompleteCached.unshift(data);
       }
 

@@ -116,7 +116,6 @@ class MovieService {
                 return camelCaseItem;
             });
             for (const data of reviewsFromMyServer) {
-                // console.log("Super data");
                 onCompleteCached.unshift(data);
             }
             const userDetails = cached.results;

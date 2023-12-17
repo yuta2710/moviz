@@ -35,6 +35,7 @@ interface UserUpdateReviewProps {
 }
 export default class ReviewService {
   private model = reviewModel;
+
   createReviewForMovie = async (
     req: Request,
     res: Response,
