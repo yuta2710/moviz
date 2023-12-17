@@ -6,8 +6,10 @@ import {
   MovieReviewProps,
 } from "./movie.interface";
 import userModel from "../user/user.model";
-import _ from "lodash";
+import _, { concat } from "lodash";
 import { faker } from "@faker-js/faker";
+import { lowercaseFirstLetter, toCamel } from "../../utils/index.util";
+import reviewModel from "../reviews/review.model";
 
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
@@ -21,8 +23,6 @@ const OPTIONS = {
 export default class MovieService {
   getMovies = async (req: Request, res: Response, next: NextFunction) => {
     const page = req.query.page;
-    // console.log(req.query["primary_release_date.gte"].toString().split("-")[0]);
-    // const year = req.query["primary_release_date.gte"].toString().split("-")[0];
     const CACHE_KEY = `movies:${JSON.stringify(req.query)}`;
 
     console.log(CACHE_KEY);
@@ -49,7 +49,6 @@ export default class MovieService {
         console.log("The Json extracting = ", json);
         return json;
       });
-
       res.status(200).json({
         success: true,
         data: cached,
@@ -122,8 +121,34 @@ export default class MovieService {
         }
 
         const json = await response.json();
+
         return json;
       });
+
+      console.log("Movie ID = ", req.params.movieId);
+
+      const reviewsFromMyServer = await reviewModel
+        .find({
+          movie: req.params.movieId,
+        })
+        .sort({ createdAt: 1 });
+
+      console.log("Reviews from my system: ", reviewsFromMyServer);
+
+      const onCompleteCached = cached.results.map((item: any) => {
+        const camelCaseItem = _.mapKeys(item, (value, key) => {
+          if (key === "created_at" || key === "updated_at") {
+            return _.camelCase(key);
+          }
+          return key;
+        });
+
+        return camelCaseItem;
+      });
+
+      for (const data of reviewsFromMyServer) {
+        onCompleteCached.unshift(data);
+      }
 
       const userDetails = cached.results as MovieReviewProps[];
 
@@ -134,7 +159,7 @@ export default class MovieService {
         if (userExist === null) {
           const newUser = {
             username: user.author_details.username,
-            email: faker.internet.email(),
+            email: lowercaseFirstLetter(faker.internet.email()),
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
             password: "123456",
@@ -155,7 +180,7 @@ export default class MovieService {
 
       res.status(200).json({
         success: true,
-        data: cached,
+        data: onCompleteCached,
       });
     } catch (error) {
       res.status(500).json({
