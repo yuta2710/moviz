@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toCamel = exports.lowercaseFirstLetter = void 0;
+exports.getAllBadWords = exports.toCamel = exports.lowercaseFirstLetter = void 0;
+const profanity_1 = require("@2toad/profanity");
 function lowercaseFirstLetter(email) {
     if (!email || typeof email !== "string") {
         throw new Error("Invalid email address");
@@ -45,4 +46,17 @@ const toCamel = (o) => {
     return newO;
 };
 exports.toCamel = toCamel;
+const getAllBadWords = (sentence) => {
+    const splitter = sentence.split(" ");
+    const badWordsList = [];
+    for (let i = 0; i < splitter.length; i++) {
+        const word = splitter[i];
+        if (profanity_1.profanity.exists(word)) {
+            badWordsList.push(word);
+        }
+    }
+    console.log(badWordsList);
+    return badWordsList;
+};
+exports.getAllBadWords = getAllBadWords;
 //# sourceMappingURL=index.util.js.map

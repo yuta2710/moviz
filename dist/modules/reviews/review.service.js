@@ -6,6 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const error_types_setting_util_1 = require("../../utils/error-types-setting.util");
 const error_response_util_1 = __importDefault(require("../../utils/error-response.util"));
 const review_model_1 = __importDefault(require("./review.model"));
+const index_util_1 = require("../../utils/index.util");
+const profanity_1 = require("@2toad/profanity");
+const bad_words_1 = __importDefault(require("bad-words"));
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
     method: "GET",
@@ -14,15 +17,34 @@ const OPTIONS = {
         Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
     },
 };
+const filter = new bad_words_1.default();
+const options = new profanity_1.ProfanityOptions();
+options.wholeWord = false;
+options.grawlix = "*****";
+options.grawlixChar = "$";
 class ReviewService {
     model = review_model_1.default;
     createReviewForMovie = async (req, res, next) => {
+        let contentProfatter = "";
         try {
             const { author, author_details, content, tag, movie } = req.body;
+            console.log("Is tuc tieu ? ", profanity_1.profanity.exists(content));
+            console.log((0, index_util_1.getAllBadWords)(content));
+            if (profanity_1.profanity.exists(content)) {
+                // console.log("Shit word " + filter.clean(content));
+                // return next(
+                //   new ErrorResponse(
+                //     400,
+                //     ErrorType["BAD_REQUEST"],
+                //     "Your review has some bad words, try again"
+                //   )
+                // );
+                contentProfatter = profanity_1.profanity.censor(content);
+            }
             const review = await this.model.create({
                 author,
                 author_details,
-                content,
+                content: contentProfatter,
                 tag,
                 movie,
             });

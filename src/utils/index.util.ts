@@ -1,3 +1,5 @@
+import { profanity } from "@2toad/profanity";
+
 export function lowercaseFirstLetter(email: string): string {
   if (!email || typeof email !== "string") {
     throw new Error("Invalid email address");
@@ -49,4 +51,19 @@ export const toCamel = (o: any): any => {
     }
   }
   return newO;
+};
+
+export const getAllBadWords = (sentence: string) => {
+  const splitter = sentence.split(" ");
+  const badWordsList = [];
+
+  for (let i = 0; i < splitter.length; i++) {
+    const word = splitter[i];
+    if (profanity.exists(word)) {
+      badWordsList.push(word);
+    }
+  }
+
+  console.log(badWordsList);
+  return badWordsList;
 };

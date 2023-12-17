@@ -7,8 +7,11 @@ import { getOrSetCache } from "../../utils/cache.util";
 import reviewModel from "./review.model";
 import { MovieReviewProps } from "../movies/movie.interface";
 import { faker } from "@faker-js/faker";
-import { lowercaseFirstLetter } from "../../utils/index.util";
+import { getAllBadWords, lowercaseFirstLetter } from "../../utils/index.util";
 import _ from "lodash";
+import { ProfanityOptions, profanity } from "@2toad/profanity";
+import Filter from "bad-words";
+import { CensorType } from "@2toad/profanity/dist/models";
 
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
@@ -18,6 +21,14 @@ const OPTIONS = {
     Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
   },
 };
+
+const filter = new Filter();
+
+const options = new ProfanityOptions();
+
+options.wholeWord = false;
+options.grawlix = "*****";
+options.grawlixChar = "$";
 
 interface UserUpdateReviewProps {
   newReviews: FilmReviewProps[];
@@ -29,13 +40,29 @@ export default class ReviewService {
     res: Response,
     next: NextFunction
   ) => {
+    let contentProfatter = "";
     try {
       const { author, author_details, content, tag, movie } =
         req.body as FilmReviewProps;
+      console.log("Is tuc tieu ? ", profanity.exists(content));
+
+      console.log(getAllBadWords(content));
+
+      if (profanity.exists(content)) {
+        // console.log("Shit word " + filter.clean(content));
+        // return next(
+        //   new ErrorResponse(
+        //     400,
+        //     ErrorType["BAD_REQUEST"],
+        //     "Your review has some bad words, try again"
+        //   )
+        // );
+        contentProfatter = profanity.censor(content);
+      }
       const review = await this.model.create({
         author,
         author_details,
-        content,
+        content: contentProfatter,
         tag,
         movie,
       });
