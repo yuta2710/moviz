@@ -127,9 +127,11 @@ export default class MovieService {
 
       console.log("Movie ID = ", req.params.movieId);
 
-      const reviewsFromMyServer = await reviewModel.find({
-        movie: req.params.movieId,
-      });
+      const reviewsFromMyServer = await reviewModel
+        .find({
+          movie: req.params.movieId,
+        })
+        .sort({ createdAt: 1 });
 
       console.log("Reviews from my system: ", reviewsFromMyServer);
 
@@ -145,7 +147,8 @@ export default class MovieService {
       });
 
       for (const data of reviewsFromMyServer) {
-        onCompleteCached.push(data);
+        // console.log("Super data");
+        onCompleteCached.unshift(data);
       }
 
       const userDetails = cached.results as MovieReviewProps[];

@@ -49,25 +49,8 @@ export default class ReviewService {
 
       let contentProfatter = content;
       if (profanity.exists(content)) {
-        // console.log("Shit word " + filter.clean(content));
-        // return next(
-        //   new ErrorResponse(
-        //     400,
-        //     ErrorType["BAD_REQUEST"],
-        //     "Your review has some bad words, try again"
-        //   )
-        // );
         contentProfatter = profanity.censor(content);
-        console.log("Alo alo");
       }
-
-      console.log("Oh year = ", {
-        author,
-        author_details,
-        content: contentProfatter,
-        tag,
-        movie,
-      });
       const review = await this.model.create({
         author,
         author_details,

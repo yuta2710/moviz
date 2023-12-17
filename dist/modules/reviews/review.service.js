@@ -31,24 +31,8 @@ class ReviewService {
             console.log((0, index_util_1.getAllBadWords)(content));
             let contentProfatter = content;
             if (profanity_1.profanity.exists(content)) {
-                // console.log("Shit word " + filter.clean(content));
-                // return next(
-                //   new ErrorResponse(
-                //     400,
-                //     ErrorType["BAD_REQUEST"],
-                //     "Your review has some bad words, try again"
-                //   )
-                // );
                 contentProfatter = profanity_1.profanity.censor(content);
-                console.log("Alo alo");
             }
-            console.log("Oh year = ", {
-                author,
-                author_details,
-                content: contentProfatter,
-                tag,
-                movie,
-            });
             const review = await this.model.create({
                 author,
                 author_details,

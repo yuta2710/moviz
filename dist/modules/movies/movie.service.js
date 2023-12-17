@@ -100,9 +100,11 @@ class MovieService {
                 return json;
             });
             console.log("Movie ID = ", req.params.movieId);
-            const reviewsFromMyServer = await review_model_1.default.find({
+            const reviewsFromMyServer = await review_model_1.default
+                .find({
                 movie: req.params.movieId,
-            });
+            })
+                .sort({ createdAt: 1 });
             console.log("Reviews from my system: ", reviewsFromMyServer);
             const onCompleteCached = cached.results.map((item) => {
                 const camelCaseItem = lodash_1.default.mapKeys(item, (value, key) => {
@@ -114,7 +116,8 @@ class MovieService {
                 return camelCaseItem;
             });
             for (const data of reviewsFromMyServer) {
-                onCompleteCached.push(data);
+                // console.log("Super data");
+                onCompleteCached.unshift(data);
             }
             const userDetails = cached.results;
             for (const user of userDetails) {
