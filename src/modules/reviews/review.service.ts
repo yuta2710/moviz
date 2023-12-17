@@ -40,7 +40,6 @@ export default class ReviewService {
     res: Response,
     next: NextFunction
   ) => {
-    let contentProfatter = "";
     try {
       const { author, author_details, content, tag, movie } =
         req.body as FilmReviewProps;
@@ -48,6 +47,7 @@ export default class ReviewService {
 
       console.log(getAllBadWords(content));
 
+      let contentProfatter = content;
       if (profanity.exists(content)) {
         // console.log("Shit word " + filter.clean(content));
         // return next(
@@ -58,7 +58,16 @@ export default class ReviewService {
         //   )
         // );
         contentProfatter = profanity.censor(content);
+        console.log("Alo alo");
       }
+
+      console.log("Oh year = ", {
+        author,
+        author_details,
+        content: contentProfatter,
+        tag,
+        movie,
+      });
       const review = await this.model.create({
         author,
         author_details,
