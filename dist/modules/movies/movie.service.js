@@ -99,7 +99,11 @@ class MovieService {
                 const json = await response.json();
                 return json;
             });
-            const reviewsFromMyServer = await review_model_1.default.find({});
+            console.log("Movie ID = ", req.params.movieId);
+            const reviewsFromMyServer = await review_model_1.default.find({
+                movie: req.params.movieId,
+            });
+            console.log("Reviews from my system: ", reviewsFromMyServer);
             const onCompleteCached = cached.results.map((item) => {
                 const camelCaseItem = lodash_1.default.mapKeys(item, (value, key) => {
                     if (key === "created_at" || key === "updated_at") {

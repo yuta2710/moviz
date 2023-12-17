@@ -33,6 +33,10 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    movie: {
+        type: String,
+        required: true,
+    },
 }, {
     timestamps: true,
     versionKey: false,

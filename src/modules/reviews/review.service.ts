@@ -30,11 +30,14 @@ export default class ReviewService {
     next: NextFunction
   ) => {
     try {
-      const { author, author_details, content } = req.body as FilmReviewProps;
+      const { author, author_details, content, tag, movie } =
+        req.body as FilmReviewProps;
       const review = await this.model.create({
         author,
         author_details,
         content,
+        tag,
+        movie,
       });
 
       res.status(200).json({

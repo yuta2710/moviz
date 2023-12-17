@@ -18,11 +18,13 @@ class ReviewService {
     model = review_model_1.default;
     createReviewForMovie = async (req, res, next) => {
         try {
-            const { author, author_details, content } = req.body;
+            const { author, author_details, content, tag, movie } = req.body;
             const review = await this.model.create({
                 author,
                 author_details,
                 content,
+                tag,
+                movie,
             });
             res.status(200).json({
                 success: true,

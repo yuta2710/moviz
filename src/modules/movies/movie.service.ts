@@ -125,7 +125,13 @@ export default class MovieService {
         return json;
       });
 
-      const reviewsFromMyServer = await reviewModel.find({});
+      console.log("Movie ID = ", req.params.movieId);
+
+      const reviewsFromMyServer = await reviewModel.find({
+        movie: req.params.movieId,
+      });
+
+      console.log("Reviews from my system: ", reviewsFromMyServer);
 
       const onCompleteCached = cached.results.map((item: any) => {
         const camelCaseItem = _.mapKeys(item, (value, key) => {

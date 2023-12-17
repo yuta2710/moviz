@@ -21,4 +21,5 @@ export interface FilmReviewProps {
   author_details: AuthorDetails;
   content: string;
   tag?: string;
+  movie: string;
 }
