@@ -122,6 +122,7 @@ class UserService {
             data: result,
         });
     };
+    updateProfile = async (req, res, next) => { };
 }
 exports.default = UserService;
 //# sourceMappingURL=user.service.js.map

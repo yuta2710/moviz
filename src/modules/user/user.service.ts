@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { createTokens } from "../../core/jwt/jwt.service";
 import userModel from "./user.model";
-import UserRegisterRequest from "./user.request";
+import { UserRegisterRequest } from "./user.request";
 import ErrorResponse from "../../utils/error-response.util";
 import { ErrorType } from "../../utils/error-types-setting.util";
 import { getUrlFromS3, uploadFileToS3 } from "../../core/aws/s3.service";
@@ -167,6 +167,8 @@ export default class UserService {
       data: result,
     });
   };
+
+  updateProfile = async (req: Request, res: Response, next: NextFunction) => {};
 
   // refreshCurrentUserReviewsFromLetterboxdServer = async (
   //   req: Request,
