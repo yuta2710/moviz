@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
 // import { ReviewCustomization } from "../reviews/review.interface";
 
-export default interface User extends Document {
+export interface User extends Document {
   firstName: string;
   lastName: string;
   username: string;

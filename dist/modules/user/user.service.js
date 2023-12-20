@@ -122,6 +122,25 @@ class UserService {
             data: result,
         });
     };
+    updateUserProfile = async (req, res, next) => {
+        try {
+            const updatedUser = await this.model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            return updatedUser === null
+                ? res.status(404).json({
+                    success: false,
+                    type: error_types_setting_util_1.ErrorType["NOT_FOUND"],
+                    message: "No user in this database",
+                })
+                : res.status(200).json({
+                    success: true,
+                    message: "User profile successfully updated",
+                    data: updatedUser,
+                });
+        }
+        catch (error) {
+            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], `Unable to update this user <${req.params.id}>`));
+        }
+    };
 }
 exports.default = UserService;
 //# sourceMappingURL=user.service.js.map

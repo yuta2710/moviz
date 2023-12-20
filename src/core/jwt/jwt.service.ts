@@ -1,4 +1,4 @@
-import User from "@/modules/user/user.interface";
+import { User } from "@/modules/user/user.interface";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import Token from "./jwt.interface";
 import AuthResponse from "@/modules/auth/auth.response";
