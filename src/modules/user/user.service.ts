@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { createTokens } from "../../core/jwt/jwt.service";
 import userModel from "./user.model";
-import { UserRegisterRequest } from "./user.request";
+import { UserRegisterRequest, UserUpdateProfileRequest } from "./user.request";
 import ErrorResponse from "../../utils/error-response.util";
 import { ErrorType } from "../../utils/error-types-setting.util";
 import { getUrlFromS3, uploadFileToS3 } from "../../core/aws/s3.service";
@@ -168,7 +168,38 @@ export default class UserService {
     });
   };
 
-  updateProfile = async (req: Request, res: Response, next: NextFunction) => {};
+  updateUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const updatedUser = await this.model.findByIdAndUpdate(
+        req.params.id,
+        req.body as Partial<UserUpdateProfileRequest>,
+        { new: true }
+      );
+      return updatedUser === null
+        ? res.status(404).json({
+            success: false,
+            type: ErrorType["NOT_FOUND"],
+            message: "No user in this database",
+          })
+        : res.status(200).json({
+            success: true,
+            message: "User profile successfully updated",
+            data: updatedUser,
+          });
+    } catch (error) {
+      return next(
+        new ErrorResponse(
+          400,
+          ErrorType["BAD_REQUEST"],
+          `Unable to update this user <${req.params.id}>`
+        )
+      );
+    }
+  };
 
   // refreshCurrentUserReviewsFromLetterboxdServer = async (
   //   req: Request,

@@ -1,5 +1,5 @@
 import mongoose, { model } from "mongoose";
-import User from "./user.interface";
+import { User } from "./user.interface";
 import { NextFunction } from "express";
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
