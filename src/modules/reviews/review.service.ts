@@ -10,8 +10,6 @@ import { faker } from "@faker-js/faker";
 import { getAllBadWords, lowercaseFirstLetter } from "../../utils/index.util";
 import _ from "lodash";
 import { ProfanityOptions, profanity } from "@2toad/profanity";
-import Filter from "bad-words";
-import { CensorType } from "@2toad/profanity/dist/models";
 
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
@@ -22,8 +20,6 @@ const OPTIONS = {
   },
 };
 
-const filter = new Filter();
-
 const options = new ProfanityOptions();
 
 options.wholeWord = false;
@@ -33,6 +29,7 @@ options.grawlixChar = "$";
 interface UserUpdateReviewProps {
   newReviews: FilmReviewProps[];
 }
+
 export default class ReviewService {
   private model = reviewModel;
 

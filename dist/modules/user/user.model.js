@@ -79,6 +79,10 @@ const UserSchema = new mongoose_1.default.Schema({
         enum: ["user", "admin", "manager"],
         default: "user",
     },
+    watchLists: {
+        type: [String],
+        default: [],
+    },
     photo: {
         type: String,
         default: "https://sepm-bucket.s3.eu-west-1.amazonaws.com/default_avatar.jpeg",

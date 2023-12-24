@@ -28,6 +28,9 @@ class UserController {
         this.router
             .route(`${this.path}/:id/update-profile`)
             .patch(authentication_middleware_1.protect, this.updateUserProfile);
+        this.router
+            .route(`${this.path}/:movieId/watchlists`)
+            .patch(authentication_middleware_1.protect, this.addMovieToUserWatchList);
         // this.router
         //   .route(`${this.path}/:id/reviews`)
         //   .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
@@ -62,6 +65,9 @@ class UserController {
     };
     setAvatar = async (req, res, next) => {
         return this.service.setAvatar(req, res, next);
+    };
+    addMovieToUserWatchList = async (req, res, next) => {
+        return this.service.addMovieToUserWatchList(req, res, next);
     };
 }
 exports.default = UserController;

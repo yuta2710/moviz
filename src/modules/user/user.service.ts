@@ -46,6 +46,7 @@ export default class UserService {
       );
     }
   };
+
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const users = await this.model.find({});
@@ -91,6 +92,7 @@ export default class UserService {
       throw new Error(`Unable to get this user <${req.params.id}>`);
     }
   };
+
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const updatedUser = await this.model.findByIdAndUpdate(
@@ -197,6 +199,47 @@ export default class UserService {
           ErrorType["BAD_REQUEST"],
           `Unable to update this user <${req.params.id}>`
         )
+      );
+    }
+  };
+
+  addMovieToUserWatchList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const movieId = req.params.movieId;
+    const user = req.user;
+
+    if (movieId === undefined) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Movie not found")
+      );
+    }
+
+    if (!user) {
+      return next(
+        new ErrorResponse(
+          404,
+          ErrorType["NOT_FOUND"],
+          "Unauthorize to access this endpoint"
+        )
+      );
+    }
+    try {
+      const foundedUser = await this.model.findById(user._id);
+
+      foundedUser.watchLists.push(movieId);
+      await foundedUser.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Add to watchlist successfully",
+        data: foundedUser,
+      });
+    } catch (error) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Internal server error")
       );
     }
   };

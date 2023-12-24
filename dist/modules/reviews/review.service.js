@@ -8,7 +8,6 @@ const error_response_util_1 = __importDefault(require("../../utils/error-respons
 const review_model_1 = __importDefault(require("./review.model"));
 const index_util_1 = require("../../utils/index.util");
 const profanity_1 = require("@2toad/profanity");
-const bad_words_1 = __importDefault(require("bad-words"));
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
     method: "GET",
@@ -17,7 +16,6 @@ const OPTIONS = {
         Authorization: `Bearer ${THE_MOVIE_DB_BEARER_TOKEN}`,
     },
 };
-const filter = new bad_words_1.default();
 const options = new profanity_1.ProfanityOptions();
 options.wholeWord = false;
 options.grawlix = "*****";

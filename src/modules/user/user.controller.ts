@@ -30,6 +30,10 @@ export default class UserController implements BaseController {
       .route(`${this.path}/:id/update-profile`)
       .patch(protect, this.updateUserProfile);
 
+    this.router
+      .route(`${this.path}/:movieId/watchlists`)
+      .patch(protect, this.addMovieToUserWatchList);
+
     // this.router
     //   .route(`${this.path}/:id/reviews`)
     //   .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
@@ -106,6 +110,14 @@ export default class UserController implements BaseController {
     next: NextFunction
   ): Promise<Response | void> => {
     return this.service.setAvatar(req, res, next);
+  };
+
+  private addMovieToUserWatchList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.addMovieToUserWatchList(req, res, next);
   };
 
   // private refreshCurrentUserReviewsFromLetterboxdServer = async (
