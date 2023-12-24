@@ -152,6 +152,12 @@ class UserService {
         }
         try {
             const foundedUser = await this.model.findById(user._id);
+            for (const id in foundedUser.watchLists) {
+                if (foundedUser.watchLists[id] === movieId) {
+                    console.log(foundedUser.watchLists[id], movieId);
+                    return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["BAD_REQUEST"], "Movie has already added"));
+                }
+            }
             foundedUser.watchLists.push(movieId);
             await foundedUser.save();
             res.status(200).json({
