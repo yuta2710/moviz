@@ -57,6 +57,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "admin", "manager"],
       default: "user",
     },
+    watchLists: {
+      type: [String],
+      default: [],
+    },
     photo: {
       type: String,
       default:
