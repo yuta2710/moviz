@@ -35,10 +35,10 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       type: String,
       required: true,
-      match: [
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        "Please add a valid email",
-      ],
+      // match: [
+      //   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      //   "Please add a valid email",
+      // ],
     },
     password: {
       type: String,
@@ -58,7 +58,7 @@ const UserSchema = new mongoose.Schema(
       default: "user",
     },
     watchLists: {
-      type: [String],
+      type: Array,
       default: [],
     },
     photo: {
@@ -90,11 +90,11 @@ UserSchema.pre<User>("save", async function (next: NextFunction) {
 
   console.log("User data = ", data);
 
-  if (data.length > 0) {
-    UserSchema.virtual("reviews").get(function () {
-      return data;
-    });
-  }
+  // if (data.length > 0) {
+  //   UserSchema.virtual("reviews").get(function () {
+  //     return data;
+  //   });
+  // }
 });
 
 UserSchema.methods.isValidPassword = async function (currentPassword: string) {

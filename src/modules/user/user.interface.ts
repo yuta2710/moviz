@@ -9,7 +9,7 @@ export interface User extends Document {
   email: string;
   gender: string;
   role: string;
-  watchLists: string[];
+  watchLists?: string[];
   password: string;
   isValidPassword?(currentPassword: string): Promise<Boolean | Error>;
   resetPasswordToken?: string;
