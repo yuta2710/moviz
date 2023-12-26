@@ -73,6 +73,25 @@ export default class ReviewService {
     }
   };
 
+  getAllReviews = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const reviews = await this.model.find({});
+
+      res.status(200).json({
+        success: true,
+        data: reviews,
+      });
+    } catch (error) {
+      next(
+        new ErrorResponse(
+          404,
+          ErrorType["INTERNAL_SERVER_ERROR"],
+          "Unable to get these reviews"
+        )
+      );
+    }
+  };
+
   // getReviewsByMovieId = async (
   //   req: Request,
   //   res: Response,
