@@ -1,6 +1,8 @@
 import { Document } from "mongoose";
+import { Movie } from "../movies/movie.interface";
+// import { ReviewCustomization } from "../reviews/review.interface";
 
-export default interface User extends Document {
+export interface User extends Document {
   firstName: string;
   lastName: string;
   username: string;
@@ -12,5 +14,6 @@ export default interface User extends Document {
   resetPasswordToken?: string;
   resetPasswordExpired?: string;
   refreshTokens?: [string];
+  // reviews?: ReviewCustomization[];
   getResetPasswordToken?(): void;
 }

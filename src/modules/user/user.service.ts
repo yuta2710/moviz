@@ -1,12 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { createTokens } from "../../core/jwt/jwt.service";
 import userModel from "./user.model";
-import UserRegisterRequest from "./user.request";
+import { UserRegisterRequest, UserUpdateProfileRequest } from "./user.request";
 import ErrorResponse from "../../utils/error-response.util";
 import { ErrorType } from "../../utils/error-types-setting.util";
 import { getUrlFromS3, uploadFileToS3 } from "../../core/aws/s3.service";
 import { UploadedFile } from "express-fileupload";
 import { isValidAvatar } from "../../utils/checker.util";
+// import { ReviewCustomization } from "../reviews/review.interface";
+import letterboxd from "letterboxd-api";
+
+interface UserUpdateReviewProps {
+  // newReviews: ReviewCustomization[];
+}
 
 export default class UserService {
   private model = userModel;
@@ -19,14 +25,28 @@ export default class UserService {
     try {
       const { firstName, lastName, username, email, password, role, gender } =
         req.body as UserRegisterRequest;
-      const user = await this.model.create({
-        username,
+
+      console.log("\nUser Register Data = ");
+      console.table({
         firstName,
         lastName,
+        username,
         email,
         password,
-        role,
         gender,
+        role,
+      });
+
+      console.log(gender);
+
+      const user = await this.model.create({
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+        gender,
+        role,
       });
 
       return createTokens(user);
@@ -40,6 +60,7 @@ export default class UserService {
       );
     }
   };
+
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const users = await this.model.find({});
@@ -85,6 +106,7 @@ export default class UserService {
       throw new Error(`Unable to get this user <${req.params.id}>`);
     }
   };
+
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const updatedUser = await this.model.findByIdAndUpdate(
@@ -161,4 +183,127 @@ export default class UserService {
       data: result,
     });
   };
+
+  updateUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const updatedUser = await this.model.findByIdAndUpdate(
+        req.params.id,
+        req.body as Partial<UserUpdateProfileRequest>,
+        { new: true }
+      );
+      return updatedUser === null
+        ? res.status(404).json({
+            success: false,
+            type: ErrorType["NOT_FOUND"],
+            message: "No user in this database",
+          })
+        : res.status(200).json({
+            success: true,
+            message: "User profile successfully updated",
+            data: updatedUser,
+          });
+    } catch (error) {
+      return next(
+        new ErrorResponse(
+          400,
+          ErrorType["BAD_REQUEST"],
+          `Unable to update this user <${req.params.id}>`
+        )
+      );
+    }
+  };
+
+  addMovieToUserWatchList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const movieId = req.params.movieId;
+    const user = req.user;
+
+    if (movieId === undefined) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Movie not found")
+      );
+    }
+
+    if (!user) {
+      return next(
+        new ErrorResponse(
+          404,
+          ErrorType["NOT_FOUND"],
+          "Unauthorize to access this endpoint"
+        )
+      );
+    }
+    try {
+      const foundedUser = (await this.model.findById(user._id)) as any;
+
+      for (const id in foundedUser.watchLists) {
+        if (foundedUser.watchLists[id] === movieId) {
+          console.log(foundedUser.watchLists[id], movieId);
+          return next(
+            new ErrorResponse(
+              404,
+              ErrorType["BAD_REQUEST"],
+              "Movie has already added"
+            )
+          );
+        }
+      }
+      foundedUser.watchLists.push(movieId);
+      await foundedUser.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Add to watchlist successfully",
+        data: foundedUser,
+      });
+    } catch (error) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Internal server error")
+      );
+    }
+  };
+
+  // refreshCurrentUserReviewsFromLetterboxdServer = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ) => {
+  //   try {
+  //     const data = (await letterboxd(
+  //       req.user.username
+  //     )) as ReviewCustomization[];
+
+  //     console.log("Data of user", data);
+
+  //     console.log(req.params.id);
+
+  //     // const updatedUser = await userModel.findById(req.params.id);
+
+  //     // console.log(updatedUser);
+
+  //     // updatedUser.reviews = data;
+
+  //     // await updatedUser.save();
+
+  //     res.status(200).json({
+  //       success: true,
+  //       data,
+  //     });
+  //   } catch (error) {
+  //     return next(
+  //       new ErrorResponse(
+  //         400,
+  //         ErrorType["BAD_REQUEST"],
+  //         `Unable to update this user <${req.params.id}>`
+  //       )
+  //     );
+  //   }
+  // };
 }

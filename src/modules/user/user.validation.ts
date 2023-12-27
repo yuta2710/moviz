@@ -6,5 +6,6 @@ export const onCreate = Joi.object({
   username: Joi.string().required().trim(),
   email: Joi.string().email().required().trim(),
   password: Joi.string().required().min(6).trim(),
+  gender: Joi.string().max(1).trim(),
   role: Joi.string().required().trim(),
 });

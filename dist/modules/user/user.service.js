@@ -14,14 +14,25 @@ class UserService {
     createUser = async (req, res, next) => {
         try {
             const { firstName, lastName, username, email, password, role, gender } = req.body;
-            const user = await this.model.create({
-                username,
+            console.log("\nUser Register Data = ");
+            console.table({
                 firstName,
                 lastName,
+                username,
                 email,
                 password,
-                role,
                 gender,
+                role,
+            });
+            console.log(gender);
+            const user = await this.model.create({
+                firstName,
+                lastName,
+                username,
+                email,
+                password,
+                gender,
+                role,
             });
             return (0, jwt_service_1.createTokens)(user);
         }
@@ -121,6 +132,54 @@ class UserService {
             message: `Successfully uploaded the photo to S3 bucket and update the avatar of user ${req.params.id}`,
             data: result,
         });
+    };
+    updateUserProfile = async (req, res, next) => {
+        try {
+            const updatedUser = await this.model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            return updatedUser === null
+                ? res.status(404).json({
+                    success: false,
+                    type: error_types_setting_util_1.ErrorType["NOT_FOUND"],
+                    message: "No user in this database",
+                })
+                : res.status(200).json({
+                    success: true,
+                    message: "User profile successfully updated",
+                    data: updatedUser,
+                });
+        }
+        catch (error) {
+            return next(new error_response_util_1.default(400, error_types_setting_util_1.ErrorType["BAD_REQUEST"], `Unable to update this user <${req.params.id}>`));
+        }
+    };
+    addMovieToUserWatchList = async (req, res, next) => {
+        const movieId = req.params.movieId;
+        const user = req.user;
+        if (movieId === undefined) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Movie not found"));
+        }
+        if (!user) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Unauthorize to access this endpoint"));
+        }
+        try {
+            const foundedUser = (await this.model.findById(user._id));
+            for (const id in foundedUser.watchLists) {
+                if (foundedUser.watchLists[id] === movieId) {
+                    console.log(foundedUser.watchLists[id], movieId);
+                    return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["BAD_REQUEST"], "Movie has already added"));
+                }
+            }
+            foundedUser.watchLists.push(movieId);
+            await foundedUser.save();
+            res.status(200).json({
+                success: true,
+                message: "Add to watchlist successfully",
+                data: foundedUser,
+            });
+        }
+        catch (error) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Internal server error"));
+        }
     };
 }
 exports.default = UserService;

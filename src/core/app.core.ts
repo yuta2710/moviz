@@ -8,6 +8,10 @@ import helmet from "helmet";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import fileUpload from "express-fileupload";
+import Redis from "ioredis";
+import colors, { inverse } from "colors";
+import { redis } from "../utils/cache.util";
+// import { connectRedisServer } from "@/utils/cache.util";
 
 export default class App {
   public express: Application;
@@ -18,6 +22,7 @@ export default class App {
     this.port = port;
 
     this.initDbConnection();
+    this.initRedisConnection();
     this.initMiddleware();
     this.initControllers(controllers);
     this.initErrorHandler();
@@ -34,6 +39,16 @@ export default class App {
   }
   private initDbConnection(): void {
     connectMongoDB();
+  }
+
+  private async initRedisConnection() {
+    redis.on("connect", () => {
+      console.log("Redis connected successfully!");
+    });
+
+    redis.on("error", (error) => {
+      console.error("Redis connection failed:", error);
+    });
   }
 
   private initErrorHandler(): void {
