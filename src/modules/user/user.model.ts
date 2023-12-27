@@ -19,9 +19,9 @@ const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
+      required: [true, "Please add a valid username"],
       unique: true,
-      // match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
+      // match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a valid username"],
     },
     firstName: {
       type: String,
@@ -35,10 +35,10 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       type: String,
       required: true,
-      // match: [
-      //   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      //   "Please add a valid email",
-      // ],
+      match: [
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        "Please add a valid email",
+      ],
     },
     password: {
       type: String,
@@ -66,15 +66,15 @@ const UserSchema = new mongoose.Schema(
       default:
         "https://sepm-bucket.s3.eu-west-1.amazonaws.com/default_avatar.jpeg",
     },
-    resetPasswordToken: String,
-    resetPasswordExpired: String,
-    refreshTokens: [String],
+    // resetPasswordToken: String,
+    // resetPasswordExpired: String,
+    // refreshTokens: [String],
   },
   {
     timestamps: true,
     versionKey: false,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    // toJSON: { virtuals: true },
+    // toObject: { virtuals: true },
     id: false,
   }
 );
@@ -86,9 +86,9 @@ UserSchema.pre<User>("save", async function (next: NextFunction) {
 
   const salt = await bcryptjs.genSalt(10);
   this.password = await bcryptjs.hash(this.password, salt);
-  const data = await letterboxd(this.username);
+  // const data = await letterboxd(this.username);
 
-  console.log("User data = ", data);
+  // console.log("User data = ", data);
 
   // if (data.length > 0) {
   //   UserSchema.virtual("reviews").get(function () {
@@ -102,17 +102,17 @@ UserSchema.methods.isValidPassword = async function (currentPassword: string) {
   return await bcryptjs.compare(currentPassword, this.password);
 };
 
-UserSchema.methods.getResetPasswordToken = function () {
-  const resetToken = crypto.randomBytes(32).toString("hex");
+// UserSchema.methods.getResetPasswordToken = function () {
+//   const resetToken = crypto.randomBytes(32).toString("hex");
 
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
+//   this.resetPasswordToken = crypto
+//     .createHash("sha256")
+//     .update(resetToken)
+//     .digest("hex");
 
-  this.resetPasswordExpired = Date.now() + 10 * 60 * 1000;
+//   this.resetPasswordExpired = Date.now() + 10 * 60 * 1000;
 
-  return resetToken;
-};
+//   return resetToken;
+// };
 
 export default model<User>("User", UserSchema);
