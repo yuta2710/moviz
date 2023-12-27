@@ -40,10 +40,10 @@ class AuthService {
             return;
         }
         const duoTokens = await (0, jwt_service_1.createTokens)(user);
-        if ("refreshToken" in duoTokens) {
-            user.refreshTokens.push(duoTokens.refreshToken);
-            await user.save();
-        }
+        // if ("refreshToken" in duoTokens) {
+        //   user.refreshTokens.push(duoTokens.refreshToken as string);
+        //   await user.save();
+        // }
         return duoTokens;
     };
     getMe = async (req, res, next) => {

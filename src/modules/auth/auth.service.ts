@@ -58,10 +58,10 @@ export default class AuthService {
     }
     const duoTokens = await createTokens(user);
 
-    if ("refreshToken" in duoTokens) {
-      user.refreshTokens.push(duoTokens.refreshToken as string);
-      await user.save();
-    }
+    // if ("refreshToken" in duoTokens) {
+    //   user.refreshTokens.push(duoTokens.refreshToken as string);
+    //   await user.save();
+    // }
 
     return duoTokens;
   };

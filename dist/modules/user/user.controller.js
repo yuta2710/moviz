@@ -67,7 +67,7 @@ class UserController {
         return this.service.setAvatar(req, res, next);
     };
     addMovieToUserWatchList = async (req, res, next) => {
-        // return this.service.addMovieToUserWatchList(req, res, next);
+        return this.service.addMovieToUserWatchList(req, res, next);
     };
 }
 exports.default = UserController;

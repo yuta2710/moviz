@@ -117,7 +117,7 @@ export default class UserController implements BaseController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
-    // return this.service.addMovieToUserWatchList(req, res, next);
+    return this.service.addMovieToUserWatchList(req, res, next);
   };
 
   // private refreshCurrentUserReviewsFromLetterboxdServer = async (
