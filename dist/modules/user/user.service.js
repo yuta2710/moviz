@@ -162,7 +162,7 @@ class UserService {
             return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Unauthorize to access this endpoint"));
         }
         try {
-            const foundedUser = await this.model.findById(user._id);
+            const foundedUser = (await this.model.findById(user._id));
             for (const id in foundedUser.watchLists) {
                 if (foundedUser.watchLists[id] === movieId) {
                     console.log(foundedUser.watchLists[id], movieId);

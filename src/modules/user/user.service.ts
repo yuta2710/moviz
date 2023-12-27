@@ -241,7 +241,7 @@ export default class UserService {
       );
     }
     try {
-      const foundedUser = await this.model.findById(user._id);
+      const foundedUser = (await this.model.findById(user._id)) as any;
 
       for (const id in foundedUser.watchLists) {
         if (foundedUser.watchLists[id] === movieId) {
