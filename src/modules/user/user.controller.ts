@@ -23,8 +23,16 @@ export default class UserController implements BaseController {
     this.router
       .route(`${this.path}/:id`)
       .get(protect, authorize("admin"), this.getUserById)
-      .put(protect, authorize("admin"), this.updateUser)
+      .put(protect, this.updateUser)
       .delete(protect, authorize("admin"), this.deleteUser);
+
+    this.router
+      .route(`${this.path}/:id/update-profile`)
+      .patch(protect, this.updateUserProfile);
+
+    this.router
+      .route(`${this.path}/:movieId/watchlists`)
+      .patch(protect, this.addMovieToUserWatchList);
 
     // this.router
     //   .route(`${this.path}/:id/reviews`)
@@ -80,6 +88,14 @@ export default class UserController implements BaseController {
     return await this.service.updateUser(req, res, next);
   };
 
+  private updateUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return await this.service.updateUserProfile(req, res, next);
+  };
+
   private deleteUser = async (
     req: Request,
     res: Response,
@@ -94,6 +110,14 @@ export default class UserController implements BaseController {
     next: NextFunction
   ): Promise<Response | void> => {
     return this.service.setAvatar(req, res, next);
+  };
+
+  private addMovieToUserWatchList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.addMovieToUserWatchList(req, res, next);
   };
 
   // private refreshCurrentUserReviewsFromLetterboxdServer = async (

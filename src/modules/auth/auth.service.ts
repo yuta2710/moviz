@@ -1,7 +1,7 @@
 import UserService from "../user/user.service";
 import AuthRequest from "./auth.request";
 import userModel from "../user/user.model";
-import User from "../user/user.interface";
+import { User } from "../user/user.interface";
 import { createTokens } from "../../core/jwt/jwt.service";
 import { NextFunction, Request, Response } from "express";
 import ErrorResponse from "../../utils/error-response.util";

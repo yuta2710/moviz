@@ -1,5 +1,5 @@
 import mongoose, { model } from "mongoose";
-import User from "./user.interface";
+import { User } from "./user.interface";
 import { NextFunction } from "express";
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
@@ -56,6 +56,10 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin", "manager"],
       default: "user",
+    },
+    watchLists: {
+      type: [String],
+      default: [],
     },
     photo: {
       type: String,
