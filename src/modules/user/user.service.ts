@@ -25,14 +25,28 @@ export default class UserService {
     try {
       const { firstName, lastName, username, email, password, role, gender } =
         req.body as UserRegisterRequest;
-      const user = await this.model.create({
-        username,
+
+      console.log("\nUser Register Data = ");
+      console.table({
         firstName,
         lastName,
+        username,
         email,
         password,
-        role,
         gender,
+        role,
+      });
+
+      console.log(gender);
+
+      const user = await this.model.create({
+        firstName,
+        lastName,
+        username,
+        email,
+        password,
+        gender,
+        role,
       });
 
       return createTokens(user);
@@ -227,7 +241,7 @@ export default class UserService {
       );
     }
     try {
-      const foundedUser = await this.model.findById(user._id);
+      const foundedUser = (await this.model.findById(user._id)) as any;
 
       for (const id in foundedUser.watchLists) {
         if (foundedUser.watchLists[id] === movieId) {

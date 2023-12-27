@@ -16,7 +16,19 @@ export default class AuthService {
     res: Response,
     next: NextFunction
   ): Promise<{ accessToken: string; refreshToken: string } | Error> => {
-    console.log(req.body);
+    // const { firstName, lastName, username, email, password, gender, role } =
+    //   req.body;
+
+    // console.log("This table = ");
+    // console.table({
+    //   firstName,
+    //   lastName,
+    //   username,
+    //   email,
+    //   password,
+    //   gender,
+    //   role,
+    // });
     const duoTokens = await this.userService.createUser(req, res, next);
     return duoTokens;
   };
@@ -46,10 +58,10 @@ export default class AuthService {
     }
     const duoTokens = await createTokens(user);
 
-    if ("refreshToken" in duoTokens) {
-      user.refreshTokens.push(duoTokens.refreshToken as string);
-      await user.save();
-    }
+    // if ("refreshToken" in duoTokens) {
+    //   user.refreshTokens.push(duoTokens.refreshToken as string);
+    //   await user.save();
+    // }
 
     return duoTokens;
   };

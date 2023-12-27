@@ -12,7 +12,18 @@ const error_types_setting_util_1 = require("../../utils/error-types-setting.util
 class AuthService {
     userService = new user_service_1.default();
     register = async (req, res, next) => {
-        console.log(req.body);
+        // const { firstName, lastName, username, email, password, gender, role } =
+        //   req.body;
+        // console.log("This table = ");
+        // console.table({
+        //   firstName,
+        //   lastName,
+        //   username,
+        //   email,
+        //   password,
+        //   gender,
+        //   role,
+        // });
         const duoTokens = await this.userService.createUser(req, res, next);
         return duoTokens;
     };
@@ -29,10 +40,10 @@ class AuthService {
             return;
         }
         const duoTokens = await (0, jwt_service_1.createTokens)(user);
-        if ("refreshToken" in duoTokens) {
-            user.refreshTokens.push(duoTokens.refreshToken);
-            await user.save();
-        }
+        // if ("refreshToken" in duoTokens) {
+        //   user.refreshTokens.push(duoTokens.refreshToken as string);
+        //   await user.save();
+        // }
         return duoTokens;
     };
     getMe = async (req, res, next) => {

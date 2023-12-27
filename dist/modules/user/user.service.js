@@ -14,14 +14,25 @@ class UserService {
     createUser = async (req, res, next) => {
         try {
             const { firstName, lastName, username, email, password, role, gender } = req.body;
-            const user = await this.model.create({
-                username,
+            console.log("\nUser Register Data = ");
+            console.table({
                 firstName,
                 lastName,
+                username,
                 email,
                 password,
-                role,
                 gender,
+                role,
+            });
+            console.log(gender);
+            const user = await this.model.create({
+                firstName,
+                lastName,
+                username,
+                email,
+                password,
+                gender,
+                role,
             });
             return (0, jwt_service_1.createTokens)(user);
         }
@@ -151,7 +162,7 @@ class UserService {
             return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Unauthorize to access this endpoint"));
         }
         try {
-            const foundedUser = await this.model.findById(user._id);
+            const foundedUser = (await this.model.findById(user._id));
             for (const id in foundedUser.watchLists) {
                 if (foundedUser.watchLists[id] === movieId) {
                     console.log(foundedUser.watchLists[id], movieId);

@@ -14,6 +14,7 @@ class ReviewController {
         this.initRoutes();
     }
     initRoutes = () => {
+        this.router.route(`${this.path}`).get(this.getAllReviews);
         this.router
             .route(`${this.path}/:movieId`)
             // .get(protect, authorize("admin"), this.getUsers)
@@ -21,6 +22,9 @@ class ReviewController {
     };
     createReview = async (req, res, next) => {
         return this.service.createReviewForMovie(req, res, next);
+    };
+    getAllReviews = async (req, res, next) => {
+        return this.service.getAllReviews(req, res, next);
     };
 }
 exports.default = ReviewController;

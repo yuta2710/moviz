@@ -28,8 +28,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const crypto_1 = __importDefault(require("crypto"));
-const letterboxd_api_1 = __importDefault(require("letterboxd-api"));
 // export type ReviewCustomization = Letterboxd & {
 //   film: {
 //     title: string;
@@ -41,9 +39,9 @@ const letterboxd_api_1 = __importDefault(require("letterboxd-api"));
 const UserSchema = new mongoose_1.default.Schema({
     username: {
         type: String,
-        required: true,
+        required: [true, "Please add a valid username"],
         unique: true,
-        // match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a username"],
+        // match: [/^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{0,29}$/, "Please add a valid username"],
     },
     firstName: {
         type: String,
@@ -80,21 +78,21 @@ const UserSchema = new mongoose_1.default.Schema({
         default: "user",
     },
     watchLists: {
-        type: [String],
+        type: Array,
         default: [],
     },
     photo: {
         type: String,
         default: "https://sepm-bucket.s3.eu-west-1.amazonaws.com/default_avatar.jpeg",
     },
-    resetPasswordToken: String,
-    resetPasswordExpired: String,
-    refreshTokens: [String],
+    // resetPasswordToken: String,
+    // resetPasswordExpired: String,
+    // refreshTokens: [String],
 }, {
     timestamps: true,
     versionKey: false,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    // toJSON: { virtuals: true },
+    // toObject: { virtuals: true },
     id: false,
 });
 UserSchema.pre("save", async function (next) {
@@ -103,26 +101,26 @@ UserSchema.pre("save", async function (next) {
     }
     const salt = await bcryptjs_1.default.genSalt(10);
     this.password = await bcryptjs_1.default.hash(this.password, salt);
-    const data = await (0, letterboxd_api_1.default)(this.username);
-    console.log("User data = ", data);
-    if (data.length > 0) {
-        UserSchema.virtual("reviews").get(function () {
-            return data;
-        });
-    }
+    // const data = await letterboxd(this.username);
+    // console.log("User data = ", data);
+    // if (data.length > 0) {
+    //   UserSchema.virtual("reviews").get(function () {
+    //     return data;
+    //   });
+    // }
 });
 UserSchema.methods.isValidPassword = async function (currentPassword) {
     console.log(this.password, currentPassword);
     return await bcryptjs_1.default.compare(currentPassword, this.password);
 };
-UserSchema.methods.getResetPasswordToken = function () {
-    const resetToken = crypto_1.default.randomBytes(32).toString("hex");
-    this.resetPasswordToken = crypto_1.default
-        .createHash("sha256")
-        .update(resetToken)
-        .digest("hex");
-    this.resetPasswordExpired = Date.now() + 10 * 60 * 1000;
-    return resetToken;
-};
+// UserSchema.methods.getResetPasswordToken = function () {
+//   const resetToken = crypto.randomBytes(32).toString("hex");
+//   this.resetPasswordToken = crypto
+//     .createHash("sha256")
+//     .update(resetToken)
+//     .digest("hex");
+//   this.resetPasswordExpired = Date.now() + 10 * 60 * 1000;
+//   return resetToken;
+// };
 exports.default = (0, mongoose_1.model)("User", UserSchema);
 //# sourceMappingURL=user.model.js.map
