@@ -57,10 +57,10 @@ const UserSchema = new mongoose_1.default.Schema({
         unique: true,
         type: String,
         required: true,
-        match: [
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            "Please add a valid email",
-        ],
+        // match: [
+        //   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        //   "Please add a valid email",
+        // ],
     },
     password: {
         type: String,
@@ -80,7 +80,7 @@ const UserSchema = new mongoose_1.default.Schema({
         default: "user",
     },
     watchLists: {
-        type: [String],
+        type: Array,
         default: [],
     },
     photo: {
@@ -105,11 +105,11 @@ UserSchema.pre("save", async function (next) {
     this.password = await bcryptjs_1.default.hash(this.password, salt);
     const data = await (0, letterboxd_api_1.default)(this.username);
     console.log("User data = ", data);
-    if (data.length > 0) {
-        UserSchema.virtual("reviews").get(function () {
-            return data;
-        });
-    }
+    // if (data.length > 0) {
+    //   UserSchema.virtual("reviews").get(function () {
+    //     return data;
+    //   });
+    // }
 });
 UserSchema.methods.isValidPassword = async function (currentPassword) {
     console.log(this.password, currentPassword);

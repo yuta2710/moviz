@@ -48,6 +48,18 @@ class ReviewService {
             next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["INTERNAL_SERVER_ERROR"], "Unable to create this review"));
         }
     };
+    getAllReviews = async (req, res, next) => {
+        try {
+            const reviews = await this.model.find({});
+            res.status(200).json({
+                success: true,
+                data: reviews,
+            });
+        }
+        catch (error) {
+            next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["INTERNAL_SERVER_ERROR"], "Unable to get these reviews"));
+        }
+    };
 }
 exports.default = ReviewService;
 //# sourceMappingURL=review.service.js.map
