@@ -81,6 +81,11 @@ const UserSchema = new mongoose_1.default.Schema({
         type: Array,
         default: [],
     },
+    reviews: {
+        type: Array(mongoose_1.Schema.Types.ObjectId),
+        ref: "Review",
+        default: [],
+    },
     photo: {
         type: String,
         default: "https://sepm-bucket.s3.eu-west-1.amazonaws.com/default_avatar.jpeg",
@@ -91,8 +96,8 @@ const UserSchema = new mongoose_1.default.Schema({
 }, {
     timestamps: true,
     versionKey: false,
-    // toJSON: { virtuals: true },
-    // toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
     id: false,
 });
 UserSchema.pre("save", async function (next) {
@@ -101,14 +106,13 @@ UserSchema.pre("save", async function (next) {
     }
     const salt = await bcryptjs_1.default.genSalt(10);
     this.password = await bcryptjs_1.default.hash(this.password, salt);
-    // const data = await letterboxd(this.username);
-    // console.log("User data = ", data);
-    // if (data.length > 0) {
-    //   UserSchema.virtual("reviews").get(function () {
-    //     return data;
-    //   });
-    // }
 });
+// UserSchema.virtual("reviewSchema", {
+//   ref: "Review",
+//   localField: "_id",
+//   foreignField: "user",
+//   justOne: false,
+// });
 UserSchema.methods.isValidPassword = async function (currentPassword) {
     console.log(this.password, currentPassword);
     return await bcryptjs_1.default.compare(currentPassword, this.password);

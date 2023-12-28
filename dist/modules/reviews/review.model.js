@@ -44,5 +44,6 @@ const reviewSchema = new mongoose.Schema({
     toObject: { virtuals: true },
     id: false,
 });
+// Cascade delete courses when a bootcamp is deleted
 exports.default = (0, mongoose_1.model)("Review", reviewSchema);
 //# sourceMappingURL=review.model.js.map

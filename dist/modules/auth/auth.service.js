@@ -12,18 +12,6 @@ const error_types_setting_util_1 = require("../../utils/error-types-setting.util
 class AuthService {
     userService = new user_service_1.default();
     register = async (req, res, next) => {
-        // const { firstName, lastName, username, email, password, gender, role } =
-        //   req.body;
-        // console.log("This table = ");
-        // console.table({
-        //   firstName,
-        //   lastName,
-        //   username,
-        //   email,
-        //   password,
-        //   gender,
-        //   role,
-        // });
         const duoTokens = await this.userService.createUser(req, res, next);
         return duoTokens;
     };
@@ -49,7 +37,9 @@ class AuthService {
     getMe = async (req, res, next) => {
         const user = await user_model_1.default
             .findById(req.user._id)
-            .select("-password");
+            .populate("reviews")
+            .select("-password")
+            .exec();
         return user;
     };
     forgotPassword = async (req, res, next) => {
