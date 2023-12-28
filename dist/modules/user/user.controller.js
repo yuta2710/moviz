@@ -31,6 +31,9 @@ class UserController {
         this.router
             .route(`${this.path}/:movieId/watchlists`)
             .patch(authentication_middleware_1.protect, this.addMovieToUserWatchList);
+        this.router
+            .route(`${this.path}/:movieId/un-watchlists`)
+            .delete(authentication_middleware_1.protect, this.removeMovieFromUserWatchList);
         // this.router
         //   .route(`${this.path}/:id/reviews`)
         //   .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
@@ -68,6 +71,9 @@ class UserController {
     };
     addMovieToUserWatchList = async (req, res, next) => {
         return this.service.addMovieToUserWatchList(req, res, next);
+    };
+    removeMovieFromUserWatchList = async (req, res, next) => {
+        return this.service.removeMovieFromUserWatchList(req, res, next);
     };
 }
 exports.default = UserController;

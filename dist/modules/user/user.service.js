@@ -181,6 +181,37 @@ class UserService {
             return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Internal server error"));
         }
     };
+    removeMovieFromUserWatchList = async (req, res, next) => {
+        const movieId = req.params.movieId;
+        const user = req.user;
+        if (movieId === undefined) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Movie not found"));
+        }
+        if (!user) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Unauthorize to access this endpoint"));
+        }
+        try {
+            const foundedUser = (await this.model.findById(user._id));
+            const indexToRemove = foundedUser.watchLists.indexOf(movieId);
+            console.log(movieId);
+            console.log(indexToRemove);
+            if (indexToRemove !== -1) {
+                foundedUser.watchLists.splice(indexToRemove, 1);
+                await foundedUser.save();
+            }
+            else {
+                return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Movie does not exist to calculate by index"));
+            }
+            res.status(200).json({
+                success: true,
+                message: "Remove from watchlist successfully",
+                data: foundedUser,
+            });
+        }
+        catch (error) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Internal server error"));
+        }
+    };
 }
 exports.default = UserService;
 //# sourceMappingURL=user.service.js.map

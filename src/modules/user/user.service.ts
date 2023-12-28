@@ -270,6 +270,60 @@ export default class UserService {
     }
   };
 
+  removeMovieFromUserWatchList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const movieId = req.params.movieId;
+    const user = req.user;
+
+    if (movieId === undefined) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Movie not found")
+      );
+    }
+
+    if (!user) {
+      return next(
+        new ErrorResponse(
+          404,
+          ErrorType["NOT_FOUND"],
+          "Unauthorize to access this endpoint"
+        )
+      );
+    }
+    try {
+      const foundedUser = (await this.model.findById(user._id)) as any;
+      const indexToRemove = foundedUser.watchLists.indexOf(movieId);
+
+      console.log(movieId);
+      console.log(indexToRemove);
+
+      if (indexToRemove !== -1) {
+        foundedUser.watchLists.splice(indexToRemove, 1);
+        await foundedUser.save();
+      } else {
+        return next(
+          new ErrorResponse(
+            404,
+            ErrorType["NOT_FOUND"],
+            "Movie does not exist to calculate by index"
+          )
+        );
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "Remove from watchlist successfully",
+        data: foundedUser,
+      });
+    } catch (error) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Internal server error")
+      );
+    }
+  };
   // refreshCurrentUserReviewsFromLetterboxdServer = async (
   //   req: Request,
   //   res: Response,
