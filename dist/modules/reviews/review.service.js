@@ -38,6 +38,11 @@ class ReviewService {
                 tag,
                 movie,
             });
+            const user = req.user;
+            console.log("User before = ", user);
+            user.reviews.push(review);
+            console.log("User after = ", user);
+            await user.save();
             res.status(200).json({
                 success: true,
                 message: "Create review successfully",

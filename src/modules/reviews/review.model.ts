@@ -1,5 +1,6 @@
 import { model } from "mongoose";
 import { FilmReviewProps } from "./review.interface";
+import { NextFunction } from "express";
 
 const mongoose = require("mongoose");
 
@@ -48,5 +49,7 @@ const reviewSchema = new mongoose.Schema(
     id: false,
   }
 );
+
+// Cascade delete courses when a bootcamp is deleted
 
 export default model<FilmReviewProps>("Review", reviewSchema);

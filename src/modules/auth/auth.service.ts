@@ -16,19 +16,6 @@ export default class AuthService {
     res: Response,
     next: NextFunction
   ): Promise<{ accessToken: string; refreshToken: string } | Error> => {
-    // const { firstName, lastName, username, email, password, gender, role } =
-    //   req.body;
-
-    // console.log("This table = ");
-    // console.table({
-    //   firstName,
-    //   lastName,
-    //   username,
-    //   email,
-    //   password,
-    //   gender,
-    //   role,
-    // });
     const duoTokens = await this.userService.createUser(req, res, next);
     return duoTokens;
   };
@@ -69,7 +56,9 @@ export default class AuthService {
   public getMe = async (req: Request, res: Response, next: NextFunction) => {
     const user: User = await userModel
       .findById(req.user._id)
-      .select("-password");
+      .populate("reviews")
+      .select("-password")
+      .exec();
 
     return user;
   };

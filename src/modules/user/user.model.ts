@@ -1,4 +1,4 @@
-import mongoose, { model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 import { User } from "./user.interface";
 import { NextFunction } from "express";
 import bcryptjs from "bcryptjs";
@@ -61,6 +61,11 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    reviews: {
+      type: Array(Schema.Types.ObjectId),
+      ref: "Review",
+      default: [],
+    },
     photo: {
       type: String,
       default:
@@ -73,8 +78,8 @@ const UserSchema = new mongoose.Schema(
   {
     timestamps: true,
     versionKey: false,
-    // toJSON: { virtuals: true },
-    // toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
     id: false,
   }
 );
@@ -86,16 +91,14 @@ UserSchema.pre<User>("save", async function (next: NextFunction) {
 
   const salt = await bcryptjs.genSalt(10);
   this.password = await bcryptjs.hash(this.password, salt);
-  // const data = await letterboxd(this.username);
-
-  // console.log("User data = ", data);
-
-  // if (data.length > 0) {
-  //   UserSchema.virtual("reviews").get(function () {
-  //     return data;
-  //   });
-  // }
 });
+
+// UserSchema.virtual("reviewSchema", {
+//   ref: "Review",
+//   localField: "_id",
+//   foreignField: "user",
+//   justOne: false,
+// });
 
 UserSchema.methods.isValidPassword = async function (currentPassword: string) {
   console.log(this.password, currentPassword);
