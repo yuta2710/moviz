@@ -10,6 +10,7 @@ import _, { concat } from "lodash";
 import { faker } from "@faker-js/faker";
 import { lowercaseFirstLetter, toCamel } from "../../utils/index.util";
 import reviewModel from "../reviews/review.model";
+import bcryptjs from "bcryptjs";
 
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
@@ -151,6 +152,8 @@ export default class MovieService {
       }
 
       const userDetails = cached.results as MovieReviewProps[];
+      const salt = await bcryptjs.genSalt(10);
+      const mockPassword = await bcryptjs.hash("123456", salt);
 
       for (const user of userDetails) {
         const userExist = await userModel.findOne({
@@ -162,7 +165,7 @@ export default class MovieService {
             email: lowercaseFirstLetter(faker.internet.email()),
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
-            password: "123456",
+            password: mockPassword,
             gender: faker.helpers.arrayElement(["m", "f", "o"]),
             role: "user",
           };

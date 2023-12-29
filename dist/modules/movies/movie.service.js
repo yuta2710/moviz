@@ -9,6 +9,7 @@ const lodash_1 = __importDefault(require("lodash"));
 const faker_1 = require("@faker-js/faker");
 const index_util_1 = require("../../utils/index.util");
 const review_model_1 = __importDefault(require("../reviews/review.model"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
     method: "GET",
@@ -119,6 +120,8 @@ class MovieService {
                 onCompleteCached.unshift(data);
             }
             const userDetails = cached.results;
+            const salt = await bcryptjs_1.default.genSalt(10);
+            const mockPassword = await bcryptjs_1.default.hash("123456", salt);
             for (const user of userDetails) {
                 const userExist = await user_model_1.default.findOne({
                     username: lodash_1.default.lowerCase(user.author_details.username),
@@ -129,7 +132,7 @@ class MovieService {
                         email: (0, index_util_1.lowercaseFirstLetter)(faker_1.faker.internet.email()),
                         firstName: faker_1.faker.person.firstName(),
                         lastName: faker_1.faker.person.lastName(),
-                        password: "123456",
+                        password: mockPassword,
                         gender: faker_1.faker.helpers.arrayElement(["m", "f", "o"]),
                         role: "user",
                     };
