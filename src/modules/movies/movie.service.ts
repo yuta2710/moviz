@@ -27,7 +27,7 @@ export default class MovieService {
 
     console.log(CACHE_KEY);
 
-    const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
+    const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US&page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
 
     console.table(req.query);
     console.log(templateStr);
