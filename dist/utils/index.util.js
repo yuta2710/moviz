@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllBadWords = exports.toCamel = exports.lowercaseFirstLetter = void 0;
+exports.getRandomPhotoUrl = exports.getAllBadWords = exports.toCamel = exports.lowercaseFirstLetter = void 0;
 const profanity_1 = require("@2toad/profanity");
 function lowercaseFirstLetter(email) {
     if (!email || typeof email !== "string") {
@@ -59,4 +59,8 @@ const getAllBadWords = (sentence) => {
     return badWordsList;
 };
 exports.getAllBadWords = getAllBadWords;
+const getRandomPhotoUrl = (randomId) => {
+    return `https://api.slingacademy.com/public/sample-photos/${randomId}.jpeg`;
+};
+exports.getRandomPhotoUrl = getRandomPhotoUrl;
 //# sourceMappingURL=index.util.js.map

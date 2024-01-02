@@ -23,7 +23,7 @@ class MovieService {
         const page = req.query.page;
         const CACHE_KEY = `movies:${JSON.stringify(req.query)}`;
         console.log(CACHE_KEY);
-        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
+        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US&page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
         console.table(req.query);
         console.log(templateStr);
         try {
@@ -91,6 +91,7 @@ class MovieService {
         const CACHE_KEY = `film_${movieId}_reviews`;
         const url = `https://api.themoviedb.org/3/movie/${movieId}/reviews`;
         const newUsers = [];
+        let newReviews = [];
         try {
             const cached = await (0, cache_util_1.getOrSetCache)(CACHE_KEY, async () => {
                 const response = await fetch(url, OPTIONS);
@@ -116,6 +117,25 @@ class MovieService {
                 });
                 return camelCaseItem;
             });
+            console.log("On complete cached = ", onCompleteCached);
+            newReviews = [...onCompleteCached];
+            console.log("New Reviews = ", newReviews);
+            const superCached = onCompleteCached.map((item) => {
+                item.movie = movieId;
+                if (item.author_details.name !== null) {
+                    item.author_details.name = faker_1.faker.person.fullName();
+                }
+                item.author_details.rating = faker_1.faker.number.float({ min: 1.0, max: 10 });
+                return item;
+            });
+            console.log("Super Cached: ", superCached);
+            try {
+                const createdReviews = await review_model_1.default.insertMany(superCached);
+                console.log("Reviews created:", createdReviews);
+            }
+            catch (error) {
+                console.log(error);
+            }
             for (const data of reviewsFromMyServer) {
                 onCompleteCached.unshift(data);
             }
@@ -134,12 +154,15 @@ class MovieService {
                         lastName: faker_1.faker.person.lastName(),
                         password: mockPassword,
                         gender: faker_1.faker.helpers.arrayElement(["m", "f", "o"]),
+                        photo: (0, index_util_1.getRandomPhotoUrl)(Math.floor(Math.random() * 131) + 1),
                         role: "user",
                     };
                     newUsers.push(newUser);
                 }
             }
             try {
+                // const createdReviews = await reviewModel.insertMany(newReviews);
+                // console.log("Reviews created:", createdReviews);
                 const createdUser = await user_model_1.default.insertMany(newUsers);
                 console.log("User created:", createdUser);
             }

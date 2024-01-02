@@ -8,7 +8,11 @@ import {
 import userModel from "../user/user.model";
 import _, { concat } from "lodash";
 import { faker } from "@faker-js/faker";
-import { lowercaseFirstLetter, toCamel } from "../../utils/index.util";
+import {
+  getRandomPhotoUrl,
+  lowercaseFirstLetter,
+  toCamel,
+} from "../../utils/index.util";
 import reviewModel from "../reviews/review.model";
 import bcryptjs from "bcryptjs";
 
@@ -28,7 +32,7 @@ export default class MovieService {
 
     console.log(CACHE_KEY);
 
-    const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
+    const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US&page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
 
     console.table(req.query);
     console.log(templateStr);
@@ -112,6 +116,7 @@ export default class MovieService {
 
     const url = `https://api.themoviedb.org/3/movie/${movieId}/reviews`;
     const newUsers = [];
+    let newReviews = [];
 
     try {
       const cached: any = await getOrSetCache(CACHE_KEY, async () => {
@@ -136,16 +141,41 @@ export default class MovieService {
 
       console.log("Reviews from my system: ", reviewsFromMyServer);
 
-      const onCompleteCached = cached.results.map((item: any) => {
+      const onCompleteCached = cached.results.map((item: MovieReviewProps) => {
         const camelCaseItem = _.mapKeys(item, (value, key) => {
           if (key === "created_at" || key === "updated_at") {
             return _.camelCase(key);
           }
           return key;
         });
-
         return camelCaseItem;
       });
+
+      console.log("On complete cached = ", onCompleteCached);
+
+      newReviews = [...onCompleteCached] as MovieReviewProps[];
+
+      console.log("New Reviews = ", newReviews);
+
+      const superCached = onCompleteCached.map((item: MovieReviewProps) => {
+        item.movie = movieId;
+
+        if (item.author_details.name !== null) {
+          item.author_details.name = faker.person.fullName();
+        }
+
+        item.author_details.rating = faker.number.float({ min: 1.0, max: 10 });
+        return item;
+      });
+
+      console.log("Super Cached: ", superCached);
+
+      try {
+        const createdReviews = await reviewModel.insertMany(superCached);
+        console.log("Reviews created:", createdReviews);
+      } catch (error) {
+        console.log(error);
+      }
 
       for (const data of reviewsFromMyServer) {
         onCompleteCached.unshift(data);
@@ -167,6 +197,7 @@ export default class MovieService {
             lastName: faker.person.lastName(),
             password: mockPassword,
             gender: faker.helpers.arrayElement(["m", "f", "o"]),
+            photo: getRandomPhotoUrl(Math.floor(Math.random() * 131) + 1),
             role: "user",
           };
           newUsers.push(newUser);
@@ -174,6 +205,8 @@ export default class MovieService {
       }
 
       try {
+        // const createdReviews = await reviewModel.insertMany(newReviews);
+        // console.log("Reviews created:", createdReviews);
         const createdUser = await userModel.insertMany(newUsers);
         console.log("User created:", createdUser);
       } catch (error) {
