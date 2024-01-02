@@ -9,6 +9,7 @@ const lodash_1 = __importDefault(require("lodash"));
 const faker_1 = require("@faker-js/faker");
 const index_util_1 = require("../../utils/index.util");
 const review_model_1 = __importDefault(require("../reviews/review.model"));
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const THE_MOVIE_DB_BEARER_TOKEN = process.env.THE_MOVIE_DB_TOKEN;
 const OPTIONS = {
     method: "GET",
@@ -22,7 +23,7 @@ class MovieService {
         const page = req.query.page;
         const CACHE_KEY = `movies:${JSON.stringify(req.query)}`;
         console.log(CACHE_KEY);
-        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US?page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
+        const templateStr = `https://api.themoviedb.org/3/discover/movie?include_video=false&language=en-US&page=${page}&primary_release_date.gte=${req.query["primary_release_date.gte"]}&primary_release_date.lte=${req.query["primary_release_date.lte"]}&with_genres=${req.query["with_genres"]}&sort_by=${req.query["sort_by"]}`;
         console.table(req.query);
         console.log(templateStr);
         try {
@@ -90,6 +91,7 @@ class MovieService {
         const CACHE_KEY = `film_${movieId}_reviews`;
         const url = `https://api.themoviedb.org/3/movie/${movieId}/reviews`;
         const newUsers = [];
+        let newReviews = [];
         try {
             const cached = await (0, cache_util_1.getOrSetCache)(CACHE_KEY, async () => {
                 const response = await fetch(url, OPTIONS);
@@ -115,10 +117,31 @@ class MovieService {
                 });
                 return camelCaseItem;
             });
+            console.log("On complete cached = ", onCompleteCached);
+            newReviews = [...onCompleteCached];
+            console.log("New Reviews = ", newReviews);
+            const superCached = onCompleteCached.map((item) => {
+                item.movie = movieId;
+                if (item.author_details.name !== null) {
+                    item.author_details.name = faker_1.faker.person.fullName();
+                }
+                item.author_details.rating = faker_1.faker.number.float({ min: 1.0, max: 10 });
+                return item;
+            });
+            console.log("Super Cached: ", superCached);
+            try {
+                const createdReviews = await review_model_1.default.insertMany(superCached);
+                console.log("Reviews created:", createdReviews);
+            }
+            catch (error) {
+                console.log(error);
+            }
             for (const data of reviewsFromMyServer) {
                 onCompleteCached.unshift(data);
             }
             const userDetails = cached.results;
+            const salt = await bcryptjs_1.default.genSalt(10);
+            const mockPassword = await bcryptjs_1.default.hash("123456", salt);
             for (const user of userDetails) {
                 const userExist = await user_model_1.default.findOne({
                     username: lodash_1.default.lowerCase(user.author_details.username),
@@ -129,14 +152,17 @@ class MovieService {
                         email: (0, index_util_1.lowercaseFirstLetter)(faker_1.faker.internet.email()),
                         firstName: faker_1.faker.person.firstName(),
                         lastName: faker_1.faker.person.lastName(),
-                        password: "123456",
+                        password: mockPassword,
                         gender: faker_1.faker.helpers.arrayElement(["m", "f", "o"]),
+                        photo: (0, index_util_1.getRandomPhotoUrl)(Math.floor(Math.random() * 131) + 1),
                         role: "user",
                     };
                     newUsers.push(newUser);
                 }
             }
             try {
+                // const createdReviews = await reviewModel.insertMany(newReviews);
+                // console.log("Reviews created:", createdReviews);
                 const createdUser = await user_model_1.default.insertMany(newUsers);
                 console.log("User created:", createdUser);
             }

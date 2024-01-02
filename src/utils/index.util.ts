@@ -67,3 +67,7 @@ export const getAllBadWords = (sentence: string) => {
   console.log(badWordsList);
   return badWordsList;
 };
+
+export const getRandomPhotoUrl = (randomId: number) => {
+  return `https://api.slingacademy.com/public/sample-photos/${randomId}.jpeg`;
+};

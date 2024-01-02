@@ -36,4 +36,5 @@ export interface MovieReviewProps {
   id: string;
   updated_at: string;
   url: string;
+  movie: string;
 }
