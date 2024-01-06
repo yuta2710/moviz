@@ -106,6 +106,7 @@ class MovieService {
                 .find({
                 movie: req.params.movieId,
             })
+                .populate("author_details.reviewerId")
                 .sort({ createdAt: 1 });
             console.log("Reviews from my system: ", reviewsFromMyServer);
             const onCompleteCached = cached.results.map((item) => {
@@ -120,7 +121,7 @@ class MovieService {
             console.log("On complete cached = ", onCompleteCached);
             newReviews = [...onCompleteCached];
             console.log("New Reviews = ", newReviews);
-            const superCached = onCompleteCached.map((item) => {
+            let superCached = onCompleteCached.map((item) => {
                 item.movie = movieId;
                 if (item.author_details.name !== null) {
                     item.author_details.name = faker_1.faker.person.fullName();
@@ -144,7 +145,7 @@ class MovieService {
             const mockPassword = await bcryptjs_1.default.hash("123456", salt);
             for (const user of userDetails) {
                 const userExist = await user_model_1.default.findOne({
-                    username: lodash_1.default.lowerCase(user.author_details.username),
+                    username: lodash_1.default.lowerFirst(user.author_details.username),
                 });
                 if (userExist === null) {
                     const newUser = {

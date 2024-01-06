@@ -1,3 +1,5 @@
+import { Schema } from "mongoose";
+
 export interface Movie {
   adult: boolean;
   backdrop_path: string;
@@ -22,6 +24,7 @@ export interface MovieDetailsProps {
 }
 
 export interface AuthorDetails {
+  reviewerId: Schema.Types.ObjectId;
   name: string;
   username: string;
   avatar_path: string;

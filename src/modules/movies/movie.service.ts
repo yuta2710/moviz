@@ -137,6 +137,7 @@ export default class MovieService {
         .find({
           movie: req.params.movieId,
         })
+        .populate("author_details.reviewerId")
         .sort({ createdAt: 1 });
 
       console.log("Reviews from my system: ", reviewsFromMyServer);
@@ -157,7 +158,7 @@ export default class MovieService {
 
       console.log("New Reviews = ", newReviews);
 
-      const superCached = onCompleteCached.map((item: MovieReviewProps) => {
+      let superCached = onCompleteCached.map((item: MovieReviewProps) => {
         item.movie = movieId;
 
         if (item.author_details.name !== null) {
@@ -187,7 +188,7 @@ export default class MovieService {
 
       for (const user of userDetails) {
         const userExist = await userModel.findOne({
-          username: _.lowerCase(user.author_details.username),
+          username: _.lowerFirst(user.author_details.username),
         });
         if (userExist === null) {
           const newUser = {

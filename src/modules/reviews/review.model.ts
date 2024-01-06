@@ -1,4 +1,4 @@
-import { model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { FilmReviewProps } from "./review.interface";
 import { NextFunction } from "express";
 
@@ -12,6 +12,10 @@ const reviewSchema = new mongoose.Schema(
       required: true,
     },
     author_details: {
+      reviewerId: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
       name: {
         type: String,
         required: true,
