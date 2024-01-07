@@ -6,6 +6,7 @@ import { ErrorType } from "../../utils/error-types-setting.util";
 export default class FollowService {
   onFollow = async (req: Request, res: Response, next: NextFunction) => {
     const userIntendToFollow = await userModel.findById(req.params.id);
+
     if (userIntendToFollow !== null) {
       if (
         !userIntendToFollow.followers.includes(req.user._id) &&
