@@ -1,4 +1,5 @@
 import { profanity } from "@2toad/profanity";
+import _, { toLower } from "lodash";
 
 export function lowercaseFirstLetter(email: string): string {
   if (!email || typeof email !== "string") {
@@ -51,6 +52,10 @@ export const toCamel = (o: any): any => {
     }
   }
   return newO;
+};
+
+export const lowerAll = (data: string): string => {
+  return toLower(_.camelCase(_.toLower(data)));
 };
 
 export const getAllBadWords = (sentence: string) => {

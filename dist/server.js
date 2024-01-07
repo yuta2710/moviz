@@ -11,7 +11,7 @@ const refresh_token_controller_1 = __importDefault(require("./modules/refresh-to
 const article_controller_1 = __importDefault(require("./modules/articles/article.controller"));
 const movie_controller_1 = __importDefault(require("./modules/movies/movie.controller"));
 const review_controller_1 = __importDefault(require("./modules/reviews/review.controller"));
-const user_follow_controller_1 = __importDefault(require("./modules/user-follow/user-follow.controller"));
+const user_follow_controller_1 = __importDefault(require("./modules/follow/user-follow.controller"));
 const app = new app_core_1.default([
     new user_controller_1.default(),
     new auth_controller_1.default(),

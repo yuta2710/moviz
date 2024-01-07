@@ -10,7 +10,7 @@ import { lowercaseFirstLetter, toCamel } from "./utils/index.util";
 import ReviewController from "./modules/reviews/review.controller";
 import { profanity } from "@2toad/profanity";
 import _ from "lodash";
-import FollowController from "./modules/user-follow/user-follow.controller";
+import FollowController from "./modules/follow/user-follow.controller";
 
 const app = new App(
   [

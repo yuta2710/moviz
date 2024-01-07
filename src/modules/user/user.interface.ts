@@ -12,6 +12,7 @@ export interface User extends Document {
   password: string;
   followers?: [Schema.Types.ObjectId];
   followings?: [Schema.Types.ObjectId];
+  photo?: string;
   isValidPassword?(currentPassword: string): Promise<Boolean | Error>;
   resetPasswordToken?: string;
   resetPasswordExpired?: string;
