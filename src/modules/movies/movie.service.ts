@@ -6,10 +6,11 @@ import {
   MovieReviewProps,
 } from "./movie.interface";
 import userModel from "../user/user.model";
-import _, { concat } from "lodash";
+import _, { concat, toLower } from "lodash";
 import { faker } from "@faker-js/faker";
 import {
   getRandomPhotoUrl,
+  lowerAll,
   lowercaseFirstLetter,
   toCamel,
 } from "../../utils/index.util";
@@ -118,6 +119,15 @@ export default class MovieService {
     const newUsers = [];
     let newReviews = [];
 
+    // Step 1: Reviews from 3rd party server
+    // Step 2: Convert to camel case
+    // Step 3: Handle the lack of some fields in REVIEWS cache
+    // Step 4: Insert all USERS to mongo server at once
+    // Step 5: Extract the ID from these created user
+    // Step 6: Get username from reviews cache and find one to the user in mongo after these user created
+    // Step : Insert all REVIEWS to mongo server at once
+
+    // Reviews from 3rd party server
     try {
       const cached: any = await getOrSetCache(CACHE_KEY, async () => {
         const response = await fetch(url, OPTIONS);
@@ -131,16 +141,20 @@ export default class MovieService {
         return json;
       });
 
+      console.log("Initial Cached = ", cached);
       console.log("Movie ID = ", req.params.movieId);
 
+      // Reviews from mongo server
       const reviewsFromMyServer = await reviewModel
         .find({
           movie: req.params.movieId,
         })
+        .populate("author_details.reviewerId")
         .sort({ createdAt: 1 });
 
       console.log("Reviews from my system: ", reviewsFromMyServer);
 
+      // Convert to camel case
       const onCompleteCached = cached.results.map((item: MovieReviewProps) => {
         const camelCaseItem = _.mapKeys(item, (value, key) => {
           if (key === "created_at" || key === "updated_at") {
@@ -151,47 +165,36 @@ export default class MovieService {
         return camelCaseItem;
       });
 
-      console.log("On complete cached = ", onCompleteCached);
+      console.log(
+        "On complete cached with camel case converting = ",
+        onCompleteCached
+      );
 
       newReviews = [...onCompleteCached] as MovieReviewProps[];
 
-      console.log("New Reviews = ", newReviews);
+      console.log("\nNew Reviews = ", newReviews);
 
-      const superCached = onCompleteCached.map((item: MovieReviewProps) => {
-        item.movie = movieId;
-
-        if (item.author_details.name !== null) {
-          item.author_details.name = faker.person.fullName();
-        }
-
-        item.author_details.rating = faker.number.float({ min: 1.0, max: 10 });
-        return item;
-      });
-
-      console.log("Super Cached: ", superCached);
-
-      try {
-        const createdReviews = await reviewModel.insertMany(superCached);
-        console.log("Reviews created:", createdReviews);
-      } catch (error) {
-        console.log(error);
-      }
-
-      for (const data of reviewsFromMyServer) {
-        onCompleteCached.unshift(data);
-      }
-
-      const userDetails = cached.results as MovieReviewProps[];
+      const cachedExtractor = cached.results as MovieReviewProps[];
       const salt = await bcryptjs.genSalt(10);
       const mockPassword = await bcryptjs.hash("123456", salt);
 
-      for (const user of userDetails) {
+      console.log("Cache details: ", cachedExtractor);
+
+      for (const user of cachedExtractor) {
+        const lowerUsername = lowerAll(user.author_details.username);
+        console.log(
+          "Username lowercase = ",
+          lowerAll(user.author_details.username)
+        );
         const userExist = await userModel.findOne({
-          username: _.lowerCase(user.author_details.username),
+          username: lowerAll(user.author_details.username),
         });
+
+        console.log("Is user exist before created = ", userExist);
+
         if (userExist === null) {
           const newUser = {
-            username: user.author_details.username,
+            username: lowerUsername,
             email: lowercaseFirstLetter(faker.internet.email()),
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
@@ -204,6 +207,9 @@ export default class MovieService {
         }
       }
 
+      console.log("New users = ", newUsers);
+
+      // Insert all users to mongo server at once
       try {
         // const createdReviews = await reviewModel.insertMany(newReviews);
         // console.log("Reviews created:", createdReviews);
@@ -212,6 +218,51 @@ export default class MovieService {
       } catch (error) {
         console.error("Error creating user:", error);
         // Handle the error appropriately
+      }
+
+      //  Handle the lack of some fields in REVIEWS cache
+      let superCached = await Promise.all(
+        onCompleteCached.map(async (item: MovieReviewProps) => {
+          console.log("Lower all of item author = ", lowerAll(item.author));
+          console.log("Item = ", item);
+          item.movie = movieId;
+          item.author_details.rating = faker.number.float({
+            min: 1.0,
+            max: 10,
+          });
+          const userExist = await userModel.findOne({
+            username: lowerAll(item.author_details.username),
+          });
+
+          console.log("Is user exist = ", userExist);
+
+          if (userExist !== null) {
+            item.author_details.username = userExist.username;
+            item.author_details.reviewerId = userExist._id;
+            item.author_details.name =
+              userExist.lastName + " " + userExist.firstName;
+            item.author_details.avatar_path = userExist.photo;
+          }
+
+          console.log("\nFinal item before insert to mongo = ", item);
+          return item;
+
+          // console.log("Is user exist = ", userExist);
+        })
+      );
+
+      console.log("Super Cached: ", superCached);
+
+      // Insert all reviews to mongo server at once
+      try {
+        const createdReviews = await reviewModel.insertMany(superCached);
+        console.log("Reviews created:", createdReviews);
+      } catch (error) {
+        console.log(error);
+      }
+
+      for (const data of reviewsFromMyServer) {
+        onCompleteCached.unshift(data);
       }
 
       res.status(200).json({

@@ -54,6 +54,7 @@ export default class ReviewService {
         author_details,
         content: contentProfatter,
         tag,
+        reviewerId: req.user._id,
         movie,
       });
 

@@ -90,7 +90,11 @@ export default class UserService {
 
   getUserById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user = await this.model.findById(req.params.id).exec();
+      const user = await this.model
+        .findById(req.params.id)
+        .populate("followings")
+        .populate("followers")
+        .exec();
 
       return user === null
         ? res.status(404).json({

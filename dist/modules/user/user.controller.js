@@ -22,7 +22,7 @@ class UserController {
             .post(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.createUser);
         this.router
             .route(`${this.path}/:id`)
-            .get(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.getUserById)
+            .get(authentication_middleware_1.protect, this.getUserById)
             .put(authentication_middleware_1.protect, this.updateUser)
             .delete(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.deleteUser);
         this.router

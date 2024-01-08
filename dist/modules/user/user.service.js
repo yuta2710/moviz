@@ -61,7 +61,11 @@ class UserService {
     };
     getUserById = async (req, res, next) => {
         try {
-            const user = await this.model.findById(req.params.id).exec();
+            const user = await this.model
+                .findById(req.params.id)
+                .populate("followings")
+                .populate("followers")
+                .exec();
             return user === null
                 ? res.status(404).json({
                     success: false,
