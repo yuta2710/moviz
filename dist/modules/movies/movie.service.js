@@ -172,6 +172,7 @@ class MovieService {
             //  Handle the lack of some fields in REVIEWS cache
             let superCached = await Promise.all(onCompleteCached.map(async (item) => {
                 console.log("Lower all of item author = ", (0, index_util_1.lowerAll)(item.author));
+                console.log("Item = ", item);
                 item.movie = movieId;
                 item.author_details.rating = faker_1.faker.number.float({
                     min: 1.0,

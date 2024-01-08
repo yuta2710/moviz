@@ -224,6 +224,7 @@ export default class MovieService {
       let superCached = await Promise.all(
         onCompleteCached.map(async (item: MovieReviewProps) => {
           console.log("Lower all of item author = ", lowerAll(item.author));
+          console.log("Item = ", item);
           item.movie = movieId;
           item.author_details.rating = faker.number.float({
             min: 1.0,
