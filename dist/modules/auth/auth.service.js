@@ -38,6 +38,8 @@ class AuthService {
         const user = await user_model_1.default
             .findById(req.user._id)
             .populate("reviews")
+            .populate("followers")
+            .populate("followings")
             .select("-password")
             .exec();
         return user;

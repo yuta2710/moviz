@@ -57,6 +57,8 @@ export default class AuthService {
     const user: User = await userModel
       .findById(req.user._id)
       .populate("reviews")
+      .populate("followers")
+      .populate("followings")
       .select("-password")
       .exec();
 

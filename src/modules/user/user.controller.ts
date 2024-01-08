@@ -22,7 +22,7 @@ export default class UserController implements BaseController {
 
     this.router
       .route(`${this.path}/:id`)
-      .get(protect, authorize("admin"), this.getUserById)
+      .get(protect, this.getUserById)
       .put(protect, this.updateUser)
       .delete(protect, authorize("admin"), this.deleteUser);
 

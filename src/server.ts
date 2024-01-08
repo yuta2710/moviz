@@ -10,6 +10,7 @@ import { lowercaseFirstLetter, toCamel } from "./utils/index.util";
 import ReviewController from "./modules/reviews/review.controller";
 import { profanity } from "@2toad/profanity";
 import _ from "lodash";
+import FollowController from "./modules/follow/user-follow.controller";
 
 const app = new App(
   [
@@ -19,6 +20,7 @@ const app = new App(
     new ArticleController(),
     new MovieController(),
     new ReviewController(),
+    new FollowController(),
   ],
 
   Number(process.env.PORT)
@@ -84,10 +86,5 @@ const apiResponse = [
 //   return camelCaseItem;
 // });
 // console.log("Camelcase API = ", camelCaseApiResponse);
-
-console.log(
-  "Is tuc tieu ? ",
-  profanity.exists("I like big butts and I cannot lie")
-);
 
 app.listen();
