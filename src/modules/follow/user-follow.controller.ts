@@ -6,6 +6,7 @@ export default class FollowController {
   path: string = "";
   followPath: string = "/follow";
   unFollowPath: string = "/unfollow";
+  checkPath: string = "/check";
   router: Router = Router();
   private followService = new FollowService();
 
@@ -16,6 +17,7 @@ export default class FollowController {
   private initRoutes = () => {
     this.router.route(`${this.followPath}/:id`).post(protect, this.onFollow);
     this.router.route(`${this.unFollowPath}/:id`).post(protect, this.unFollow);
+    this.router.route(`${this.checkPath}/:id`).get(protect, this.checkFollowing);
   };
 
   private onFollow = async (
@@ -32,5 +34,13 @@ export default class FollowController {
     next: NextFunction
   ): Promise<Response | void> => {
     return this.followService.unFollow(req, res, next);
+  };
+
+  private checkFollowing = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.followService.checkFollowing(req, res, next);
   };
 }

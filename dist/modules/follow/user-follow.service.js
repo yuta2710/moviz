@@ -51,6 +51,29 @@ class FollowService {
             return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "User not found."));
         }
     };
+    checkFollowing = async (req, res, next) => {
+        const userIntendToCheck = await user_model_1.default.findById(req.params.id);
+        if (userIntendToCheck !== null) {
+            if (userIntendToCheck.followers.includes(req.user._id) &&
+                req.user.followings.includes(userIntendToCheck._id)) {
+                res.status(200).json({
+                    success: true,
+                    message: `Current user <${req.user.username}> is following new user <${userIntendToCheck.username}>`,
+                    isFollowed: true,
+                });
+            }
+            else {
+                res.status(200).json({
+                    success: true,
+                    message: `Current user <${req.user.username}> is not following new user <${userIntendToCheck.username}>`,
+                    isFollowed: false,
+                });
+            }
+        }
+        else {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "User not found."));
+        }
+    };
 }
 exports.default = FollowService;
 //# sourceMappingURL=user-follow.service.js.map

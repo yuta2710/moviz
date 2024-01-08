@@ -69,4 +69,31 @@ export default class FollowService {
       );
     }
   };
+
+  checkFollowing = async (req: Request, res: Response, next: NextFunction) => {
+    const userIntendToCheck = await userModel.findById(req.params.id);
+
+    if (userIntendToCheck !== null) {
+      if (
+        userIntendToCheck.followers.includes(req.user._id) &&
+        req.user.followings.includes(userIntendToCheck._id)
+        ) {
+        res.status(200).json({
+          success: true,
+          message: `Current user <${req.user.username}> is following new user <${userIntendToCheck.username}>`,
+          isFollowed: true,
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          message: `Current user <${req.user.username}> is not following new user <${userIntendToCheck.username}>`,
+          isFollowed: false,
+        });
+      }
+    } else {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "User not found.")
+      );
+    }
+  };
 }
