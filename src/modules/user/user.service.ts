@@ -94,6 +94,7 @@ export default class UserService {
         .findById(req.params.id)
         .populate("followings")
         .populate("followers")
+        .populate("reviews")
         .exec();
 
       return user === null
@@ -329,12 +330,7 @@ export default class UserService {
     }
   };
 
-
-  checkWatchlists = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  checkWatchlists = async (req: Request, res: Response, next: NextFunction) => {
     const movieId = req.params.movieId;
     const user = req.user;
 
@@ -355,7 +351,7 @@ export default class UserService {
     }
     try {
       const foundedUser = (await this.model.findById(user._id)) as any;
-      if(foundedUser.watchLists.includes(movieId)) {
+      if (foundedUser.watchLists.includes(movieId)) {
         res.status(200).json({
           success: true,
           message: `Current user <${foundedUser.username}> has this movie ${movieId} in their WatchLists`,

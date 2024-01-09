@@ -205,6 +205,23 @@ class MovieService {
             for (const data of reviewsFromMyServer) {
                 onCompleteCached.unshift(data);
             }
+            for (const data of onCompleteCached) {
+                console.log("Data = ", data);
+                const userExist = await user_model_1.default.findOne({
+                    username: data.author_details.username,
+                });
+                console.log(userExist);
+                // userExist.reviews.push
+                const reviewsList = await review_model_1.default.find({
+                    "author_details.username": userExist.username,
+                });
+                reviewsList.map((review) => {
+                    userExist.reviews.push(review._id);
+                });
+                console.log(reviewsList);
+                await userExist.save();
+                // console.log("Haha", userExist);
+            }
             res.status(200).json({
                 success: true,
                 data: onCompleteCached,

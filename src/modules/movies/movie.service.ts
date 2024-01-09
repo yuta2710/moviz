@@ -243,7 +243,6 @@ export default class MovieService {
               userExist.lastName + " " + userExist.firstName;
             item.author_details.avatar_path = userExist.photo;
           }
-
           console.log("\nFinal item before insert to mongo = ", item);
           return item;
 
@@ -263,6 +262,28 @@ export default class MovieService {
 
       for (const data of reviewsFromMyServer) {
         onCompleteCached.unshift(data);
+      }
+
+      for (const data of onCompleteCached) {
+        console.log("Data = ", data);
+        const userExist = await userModel.findOne({
+          username: data.author_details.username,
+        });
+
+        console.log(userExist);
+        // userExist.reviews.push
+        const reviewsList = await reviewModel.find({
+          "author_details.username": userExist.username,
+        });
+
+        reviewsList.map((review: any) => {
+          userExist.reviews.push(review._id);
+        });
+
+        console.log(reviewsList);
+
+        await userExist.save();
+        // console.log("Haha", userExist);
       }
 
       res.status(200).json({

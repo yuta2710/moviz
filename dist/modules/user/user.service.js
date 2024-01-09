@@ -65,6 +65,7 @@ class UserService {
                 .findById(req.params.id)
                 .populate("followings")
                 .populate("followers")
+                .populate("reviews")
                 .exec();
             return user === null
                 ? res.status(404).json({

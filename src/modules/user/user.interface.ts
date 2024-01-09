@@ -10,6 +10,7 @@ export interface User extends Document {
   gender: string;
   role: string;
   password: string;
+  reviews?: [Schema.Types.ObjectId];
   followers?: [Schema.Types.ObjectId];
   followings?: [Schema.Types.ObjectId];
   photo?: string;
