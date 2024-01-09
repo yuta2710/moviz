@@ -328,6 +328,52 @@ export default class UserService {
       );
     }
   };
+
+
+  checkWatchlists = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const movieId = req.params.movieId;
+    const user = req.user;
+
+    if (movieId === undefined) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Movie not found")
+      );
+    }
+
+    if (!user) {
+      return next(
+        new ErrorResponse(
+          404,
+          ErrorType["NOT_FOUND"],
+          "Unauthorize to access this endpoint"
+        )
+      );
+    }
+    try {
+      const foundedUser = (await this.model.findById(user._id)) as any;
+      if(foundedUser.watchLists.includes(movieId)) {
+        res.status(200).json({
+          success: true,
+          message: `Current user <${foundedUser.username}> has this movie ${movieId} in their WatchLists`,
+          isInWatchLists: true,
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          message: `Current user <${foundedUser.username}> doesn't have this movie ${movieId} in their WatchLists`,
+          isInWatchLists: false,
+        });
+      }
+    } catch (error) {
+      return next(
+        new ErrorResponse(404, ErrorType["NOT_FOUND"], "Internal server error")
+      );
+    }
+  };
   // refreshCurrentUserReviewsFromLetterboxdServer = async (
   //   req: Request,
   //   res: Response,

@@ -216,6 +216,36 @@ class UserService {
             return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Internal server error"));
         }
     };
+    checkWatchlists = async (req, res, next) => {
+        const movieId = req.params.movieId;
+        const user = req.user;
+        if (movieId === undefined) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Movie not found"));
+        }
+        if (!user) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Unauthorize to access this endpoint"));
+        }
+        try {
+            const foundedUser = (await this.model.findById(user._id));
+            if (foundedUser.watchLists.includes(movieId)) {
+                res.status(200).json({
+                    success: true,
+                    message: `Current user <${foundedUser.username}> has this movie ${movieId} in their WatchLists`,
+                    isInWatchLists: true,
+                });
+            }
+            else {
+                res.status(200).json({
+                    success: true,
+                    message: `Current user <${foundedUser.username}> doesn't have this movie ${movieId} in their WatchLists`,
+                    isInWatchLists: false,
+                });
+            }
+        }
+        catch (error) {
+            return next(new error_response_util_1.default(404, error_types_setting_util_1.ErrorType["NOT_FOUND"], "Internal server error"));
+        }
+    };
 }
 exports.default = UserService;
 //# sourceMappingURL=user.service.js.map

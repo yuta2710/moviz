@@ -38,6 +38,10 @@ export default class UserController implements BaseController {
       .route(`${this.path}/:movieId/un-watchlists`)
       .delete(protect, this.removeMovieFromUserWatchList);
 
+    this.router
+      .route(`${this.path}/:movieId/check-watchlists`)
+      .get(protect, this.checkWatchlists);
+
     // this.router
     //   .route(`${this.path}/:id/reviews`)
     //   .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
@@ -129,6 +133,14 @@ export default class UserController implements BaseController {
     next: NextFunction
   ): Promise<Response | void> => {
     return this.service.removeMovieFromUserWatchList(req, res, next);
+  };
+
+  private checkWatchlists = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.checkWatchlists(req, res, next);
   };
 
   // private refreshCurrentUserReviewsFromLetterboxdServer = async (
