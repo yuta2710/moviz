@@ -22,9 +22,24 @@ class UserController {
             .post(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.createUser);
         this.router
             .route(`${this.path}/:id`)
-            .get(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.getUserById)
-            .put(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.updateUser)
+            .get(authentication_middleware_1.protect, this.getUserById)
+            .put(authentication_middleware_1.protect, this.updateUser)
             .delete(authentication_middleware_1.protect, (0, authentication_middleware_1.authorize)("admin"), this.deleteUser);
+        this.router
+            .route(`${this.path}/:id/update-profile`)
+            .patch(authentication_middleware_1.protect, this.updateUserProfile);
+        this.router
+            .route(`${this.path}/:movieId/watchlists`)
+            .patch(authentication_middleware_1.protect, this.addMovieToUserWatchList);
+        this.router
+            .route(`${this.path}/:movieId/un-watchlists`)
+            .delete(authentication_middleware_1.protect, this.removeMovieFromUserWatchList);
+        this.router
+            .route(`${this.path}/:movieId/check-watchlists`)
+            .get(authentication_middleware_1.protect, this.checkWatchlists);
+        // this.router
+        //   .route(`${this.path}/:id/reviews`)
+        //   .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
         this.router.route(`${this.path}/:id/photo`).patch(authentication_middleware_1.protect, this.setAvatar);
     };
     createUser = async (req, res, next) => {
@@ -48,11 +63,23 @@ class UserController {
     updateUser = async (req, res, next) => {
         return await this.service.updateUser(req, res, next);
     };
+    updateUserProfile = async (req, res, next) => {
+        return await this.service.updateUserProfile(req, res, next);
+    };
     deleteUser = async (req, res, next) => {
         await this.service.deleteUser(req, res, next);
     };
     setAvatar = async (req, res, next) => {
         return this.service.setAvatar(req, res, next);
+    };
+    addMovieToUserWatchList = async (req, res, next) => {
+        return this.service.addMovieToUserWatchList(req, res, next);
+    };
+    removeMovieFromUserWatchList = async (req, res, next) => {
+        return this.service.removeMovieFromUserWatchList(req, res, next);
+    };
+    checkWatchlists = async (req, res, next) => {
+        return this.service.checkWatchlists(req, res, next);
     };
 }
 exports.default = UserController;

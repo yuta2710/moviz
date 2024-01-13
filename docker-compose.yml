@@ -3,11 +3,21 @@ services:
   mongo_db:
     container_name: sepm_mongo_container
     image: mongo:latest
-    restart: always
+    restart: no
     volumes:
-      - mongo_db:/data/b
+      - mongo_db:/docker build -t moviz_frontend .data/b
     ports:
       - '27017:27017'
+
+  redis:
+    image: redis:alpine3.18
+    container_name: moviz_cache_server
+    restart: unless-stopped
+    command: [ "redis-server", "--bind", "redis", "--port", "6379" ]
+    ports:
+      - '6379:6379'
+    expose:
+      - 6379
 
   api:
     build: .
@@ -19,6 +29,7 @@ services:
       NAME: "YUTA"
     depends_on:
       - mongo_db
+      - redis
     volumes:
       - .:/usr/src/app
 volumes:

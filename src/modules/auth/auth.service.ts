@@ -1,7 +1,7 @@
 import UserService from "../user/user.service";
 import AuthRequest from "./auth.request";
 import userModel from "../user/user.model";
-import User from "../user/user.interface";
+import { User } from "../user/user.interface";
 import { createTokens } from "../../core/jwt/jwt.service";
 import { NextFunction, Request, Response } from "express";
 import ErrorResponse from "../../utils/error-response.util";
@@ -16,7 +16,6 @@ export default class AuthService {
     res: Response,
     next: NextFunction
   ): Promise<{ accessToken: string; refreshToken: string } | Error> => {
-    console.log(req.body);
     const duoTokens = await this.userService.createUser(req, res, next);
     return duoTokens;
   };
@@ -46,10 +45,10 @@ export default class AuthService {
     }
     const duoTokens = await createTokens(user);
 
-    if ("refreshToken" in duoTokens) {
-      user.refreshTokens.push(duoTokens.refreshToken as string);
-      await user.save();
-    }
+    // if ("refreshToken" in duoTokens) {
+    //   user.refreshTokens.push(duoTokens.refreshToken as string);
+    //   await user.save();
+    // }
 
     return duoTokens;
   };
@@ -57,7 +56,11 @@ export default class AuthService {
   public getMe = async (req: Request, res: Response, next: NextFunction) => {
     const user: User = await userModel
       .findById(req.user._id)
-      .select("-password");
+      .populate("reviews")
+      .populate("followers")
+      .populate("followings")
+      .select("-password")
+      .exec();
 
     return user;
   };

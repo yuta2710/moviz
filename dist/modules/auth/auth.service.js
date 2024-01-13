@@ -12,7 +12,6 @@ const error_types_setting_util_1 = require("../../utils/error-types-setting.util
 class AuthService {
     userService = new user_service_1.default();
     register = async (req, res, next) => {
-        console.log(req.body);
         const duoTokens = await this.userService.createUser(req, res, next);
         return duoTokens;
     };
@@ -29,16 +28,20 @@ class AuthService {
             return;
         }
         const duoTokens = await (0, jwt_service_1.createTokens)(user);
-        if ("refreshToken" in duoTokens) {
-            user.refreshTokens.push(duoTokens.refreshToken);
-            await user.save();
-        }
+        // if ("refreshToken" in duoTokens) {
+        //   user.refreshTokens.push(duoTokens.refreshToken as string);
+        //   await user.save();
+        // }
         return duoTokens;
     };
     getMe = async (req, res, next) => {
         const user = await user_model_1.default
             .findById(req.user._id)
-            .select("-password");
+            .populate("reviews")
+            .populate("followers")
+            .populate("followings")
+            .select("-password")
+            .exec();
         return user;
     };
     forgotPassword = async (req, res, next) => {

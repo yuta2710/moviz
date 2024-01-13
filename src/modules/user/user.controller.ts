@@ -22,9 +22,29 @@ export default class UserController implements BaseController {
 
     this.router
       .route(`${this.path}/:id`)
-      .get(protect, authorize("admin"), this.getUserById)
-      .put(protect, authorize("admin"), this.updateUser)
+      .get(protect, this.getUserById)
+      .put(protect, this.updateUser)
       .delete(protect, authorize("admin"), this.deleteUser);
+
+    this.router
+      .route(`${this.path}/:id/update-profile`)
+      .patch(protect, this.updateUserProfile);
+
+    this.router
+      .route(`${this.path}/:movieId/watchlists`)
+      .patch(protect, this.addMovieToUserWatchList);
+
+    this.router
+      .route(`${this.path}/:movieId/un-watchlists`)
+      .delete(protect, this.removeMovieFromUserWatchList);
+
+    this.router
+      .route(`${this.path}/:movieId/check-watchlists`)
+      .get(protect, this.checkWatchlists);
+
+    // this.router
+    //   .route(`${this.path}/:id/reviews`)
+    //   .get(protect, this.refreshCurrentUserReviewsFromLetterboxdServer);
 
     this.router.route(`${this.path}/:id/photo`).patch(protect, this.setAvatar);
   };
@@ -76,6 +96,14 @@ export default class UserController implements BaseController {
     return await this.service.updateUser(req, res, next);
   };
 
+  private updateUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return await this.service.updateUserProfile(req, res, next);
+  };
+
   private deleteUser = async (
     req: Request,
     res: Response,
@@ -91,4 +119,39 @@ export default class UserController implements BaseController {
   ): Promise<Response | void> => {
     return this.service.setAvatar(req, res, next);
   };
+
+  private addMovieToUserWatchList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.addMovieToUserWatchList(req, res, next);
+  };
+  private removeMovieFromUserWatchList = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.removeMovieFromUserWatchList(req, res, next);
+  };
+
+  private checkWatchlists = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    return this.service.checkWatchlists(req, res, next);
+  };
+
+  // private refreshCurrentUserReviewsFromLetterboxdServer = async (
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<Response | void> => {
+  //   return this.service.refreshCurrentUserReviewsFromLetterboxdServer(
+  //     req,
+  //     res,
+  //     next
+  //   );
+  // };
 }

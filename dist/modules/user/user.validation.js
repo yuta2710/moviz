@@ -11,6 +11,7 @@ exports.onCreate = joi_1.default.object({
     username: joi_1.default.string().required().trim(),
     email: joi_1.default.string().email().required().trim(),
     password: joi_1.default.string().required().min(6).trim(),
+    gender: joi_1.default.string().max(1).trim(),
     role: joi_1.default.string().required().trim(),
 });
 //# sourceMappingURL=user.validation.js.map
