@@ -277,7 +277,9 @@ export default class MovieService {
         });
 
         reviewsList.map((review: any) => {
-          userExist.reviews.push(review._id);
+          if (!userExist.reviews.includes(review._id)) {
+            userExist.reviews.push(review._id);
+          }
         });
 
         console.log(reviewsList);

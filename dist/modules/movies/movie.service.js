@@ -216,7 +216,9 @@ class MovieService {
                     "author_details.username": userExist.username,
                 });
                 reviewsList.map((review) => {
-                    userExist.reviews.push(review._id);
+                    if (!userExist.reviews.includes(review._id)) {
+                        userExist.reviews.push(review._id);
+                    }
                 });
                 console.log(reviewsList);
                 await userExist.save();
